@@ -13,6 +13,7 @@ export class LoadingProfilerPanel {
   if(this.element.closest('[hidden]'))return;
   const s=n=>n===null?'unavailable':`${(n/1000).toFixed(3)} s`,mb=n=>n===null?'unavailable':`${(n/1e6).toFixed(2)} MB`;
   this.element.querySelector('pre').textContent=[`Page Init     ${s(profile.pageInitMs)}`,`Request Start ${s(profile.requestStartMs)}`,`Network       ${s(profile.networkMs)}`,`Transfer      ${mb(profile.transferBytes)}`,`Encoded Body  ${mb(profile.encodedBytes)}`,`Decoded Body  ${mb(profile.decodedBytes)}`,`Spark Load    ${s(profile.sparkLoadMs)} (network overlaps)`,`Spark Tail    ${s(profile.sparkTailMs)} (not pure parse)`,`Scene CPU     ${s(profile.sceneInitMs)}`,`First Render  ${s(profile.firstRenderMs)}`,`First Splat   ${s(profile.firstVisibleSplatMs)} (sampled pixels)`,`Open → Ready  ${s(profile.openToReadyMs)}`,`Nav → Ready   ${s(profile.readyMs)} (includes gallery dwell)`,`Cache         ${profile.cache}`,`Decompression unavailable`,`Parse alone   unavailable`,`GPU init      unavailable`,`Post-load FPS ${profile.averageFps?.toFixed(1)??'unavailable'} · ${profile.fpsStatus}`].join('\n');
+  this.element.querySelector('pre').textContent+=`\nViewer JS     ${s(profile.viewerModuleMs??null)}\nDebug JS      ${s(profile.debugModuleMs??null)}`;
   this.element.dataset.metrics=JSON.stringify(profile);
  }
  dispose(){this.element.remove();}

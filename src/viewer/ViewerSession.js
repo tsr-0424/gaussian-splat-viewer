@@ -9,7 +9,7 @@ import {WebActions} from '../ui/WebActions.js';
 import {ViewerUI} from '../ui/ViewerUI.js';
 const DEBUG=import.meta.env.DEV||import.meta.env.VITE_DEBUG_BUILD==='true';
 
-export function createViewerSession(container,project,scan,{pageInitializedAt,openedAt}){
+export function createViewerSession(container,project,scan,{pageInitializedAt,openedAt,moduleReadyAt}){
  const ui=new ViewerUI(container,project,scan),reset=document.querySelector('#reset'),qualitySelect=document.querySelector('#quality');
  const modelConfig={...scan,name:`${project.title} / ${scan.title}`,projectTitle:project.title,url:new URL(scan.modelUrl,location.href).href,rotation:scan.rotation??[0,0,0]};
  const loading=new LoadingScreen(project.title),errors=new ErrorOverlay(),webActions=new WebActions({normalBase:import.meta.env.VITE_DEBUG_BUILD==='true'?import.meta.env.VITE_MODEL_BASE_PATH:undefined});
@@ -28,9 +28,10 @@ export function createViewerSession(container,project,scan,{pageInitializedAt,op
   if(lowOnly){adaptive.setMode('LOW',performance.now());qualitySelect.value='LOW';for(const option of qualitySelect.options)if(['HIGH','MEDIUM'].includes(option.value))option.disabled=true;}
   try{
    if(DEBUG){
+    const debugImportAt=performance.now();
     const [{PerformancePanel},{Benchmark},{LoadingProfiler,benchmarkReport},{LoadingProfilerPanel},{NetworkDiagnostics},{NetworkPanel}]=await Promise.all([import('../ui/PerformancePanel.js'),import('../performance/Benchmark.js'),import('../performance/LoadingProfiler.js'),import('../ui/LoadingProfilerPanel.js'),import('../performance/NetworkDiagnostics.js'),import('../ui/NetworkPanel.js')]);
     if(disposed)return;
-    profiler=new LoadingProfiler();profiler.record({phase:'page-initialized',at:pageInitializedAt});profiler.record({phase:'viewer-open',at:openedAt});
+    profiler=new LoadingProfiler();profiler.record({phase:'page-initialized',at:pageInitializedAt});profiler.record({phase:'viewer-open',at:openedAt});profiler.record({phase:'viewer-module-ready',at:moduleReadyAt});profiler.record({phase:'debug-module-start',at:debugImportAt});profiler.record({phase:'debug-module-ready',at:performance.now()});
     network=new NetworkDiagnostics();
     panel=new PerformancePanel(()=>{benchmark.start();reset.disabled=benchmark.running;qualitySelect.disabled=benchmark.running;},()=>benchmark.export(),()=>benchmark.cancel());panel.setReady(false);
     profilerPanel=new LoadingProfilerPanel(panel.element,()=>{profiler.refreshResource();return benchmarkReport({profile:profiler.snapshot(),stats:viewer?.getStats(),model:modelConfig,mode:adaptive.mode,userAgent:navigator.userAgent,platform:navigator.userAgentData?.platform||navigator.platform,navigationType:performance.getEntriesByType('navigation')[0]?.type});});

@@ -18,6 +18,7 @@ files/
 *~
 verification/*.png
 verification/*benchmark*.json
+verification/*benchmark*.txt
 verification/*network*.json
 benchmark-results/
 coverage/

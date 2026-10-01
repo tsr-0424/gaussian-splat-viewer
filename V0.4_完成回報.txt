@@ -49,3 +49,9 @@ RTX 4070、Chrome 154、1280×720、DPR1、396,047 Gaussians；每級暖機3秒�
 
 14. 下一階段建議
 先用公開 debug 報告收集實體 iOS Safari、Android Chrome、桌機冷／暖 cache 同條件資料。補真實 thumbnail、第二個專案與 scan metadata；再評估模型壓縮／LOD／progressive loading 的可量測效益。先保持零成本 Pages/Release、無 Backend，不提前引入 BIM/測量等功能。
+
+公開部署驗證補充
+GitHub Actions run 36901576873 已成功；首頁→Project→Viewer 實際公開載入 396,047 splats，Settings FPS 約75，正常頁無 debug，console 無新增 error。公開 debug 已載入並可複製報告。
+第一次 debug 測量：Page Init 2.856s、Model Request Start 63.671s、Network 0.243s、Spark Load 0.510s、Scene CPU 0.051s、First Visible 64.341s、Viewer Open→Ready 61.485s；encoded 25,074,893 bytes、decoded 98,221,187 bytes、transfer 0（local cache）。其中 model request 前有明顯等待，不能把總時間都稱為模型下載或 parse，也不拿此結果比較手機。
+依此補上 Viewer JS 與 Debug JS 模組的 load/evaluation timing，方便未來分辨前端程式載入和 GS 載入。模組 timing 也是 wall-clock，包括下載與 evaluation，不能稱為純 CPU。
+回歸 smoke test：模型不存在顯示 MODEL_NOT_FOUND；損毀 PLY 顯示 INVALID_MODEL，均有畫面錯誤訊息。

@@ -13,6 +13,7 @@ test('loading phases preserve overlapping Spark load; unavailable parse/GPU/deco
  const profiler=new LoadingProfiler({observerClass:null,performanceApi:null,origin:'https://viewer.example.com'});
  for(const [phase,at] of [['page-initialized',100],['viewer-open',5000],['request',5100],['headers',5200],['spark-start',5201],['download-complete',7000],['decoded',7400],['scene-init-start',7401],['scene-init-end',7410],['first-render',5150],['rendered',7500],['visible',7515],['ready',7520]])profiler.record({phase,at});
  const result=profiler.snapshot();assert.equal(result.sparkLoadMs,2199);assert.equal(result.sparkTailMs,400);assert.equal(result.sceneInitMs,9);assert.equal(result.openToReadyMs,2520);assert.equal(result.readyMs,7520);
+ profiler.record({phase:'viewer-module-ready',at:5080});profiler.record({phase:'debug-module-start',at:5085});profiler.record({phase:'debug-module-ready',at:5095});assert.equal(profiler.snapshot().viewerModuleMs,80);assert.equal(profiler.snapshot().debugModuleMs,10);
  assert.equal(result.parseMs,null);assert.equal(result.decompressionMs,null);assert.equal(result.gpuInitializationMs,null);
 });
 test('resource observer ignores previous requests of the same model and post-load FPS requires a complete visible window',()=>{

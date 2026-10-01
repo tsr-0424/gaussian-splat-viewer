@@ -68,3 +68,5 @@ First Render 可為背景；First Splat Submission 為已排序 splats 的渲染
 同時報告 navigation→Ready 與 viewer-open→Ready，避免把 Gallery 停留時間誤當載入。Average FPS 是 ready 後前 10 秒有效 frame intervals；不足 10 秒為 collecting、隱藏分頁則 interrupted。記錄品質集合與測量視窗，便於辨認品質混用。
 
 所有 UI/面板最多 2 Hz 更新；隱藏面板不更新 DOM。沒有重寫 Spark，沒有降低原始模型品質。初次完整下載與 gzip 解碼不是 progressive Gaussian LOD。
+
+Profiler 另列 Viewer JS 與 Debug JS 的 import→ready wall-clock（含下載／evaluation）；若開始請求模型前有等待，可避免把這段誤算為 PLY parse。

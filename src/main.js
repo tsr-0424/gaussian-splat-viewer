@@ -20,7 +20,7 @@ async function route(){
  if(selected.type!=='viewer'||!scan){missingPage(container);return;}
  container.className='viewer-page';container.replaceChildren();
  const pending=document.createElement('p');pending.className='route-loading';pending.textContent=`${project.title} · Loading Spatial Data...`;container.append(pending);
- try{const {createViewerSession}=await import('./viewer/ViewerSession.js');if(current!==revision)return;session=createViewerSession(container,project,scan,{pageInitializedAt,openedAt});}
+ try{const {createViewerSession}=await import('./viewer/ViewerSession.js');const moduleReadyAt=performance.now();if(current!==revision)return;session=createViewerSession(container,project,scan,{pageInitializedAt,openedAt,moduleReadyAt});}
  catch(error){if(current===revision)errors.show(error);}
 }
 try{catalog=await loadProjects(abort.signal);pageInitializedAt=performance.now();await route();}
