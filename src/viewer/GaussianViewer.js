@@ -12,7 +12,7 @@ export class GaussianViewer {
     this.container = container;
     this.quality = quality;
     this.monitor = new PerformanceMonitor();
-    this.visibilityProbe=new FirstSplatVisibility();
+    this.visibilityProbe=(import.meta.env.DEV||import.meta.env.VITE_DEBUG_BUILD==='true')&&import.meta.env.VITE_VISIBILITY_PROBE!=='false'?new FirstSplatVisibility():null;
     this.abort = new AbortController();
     this.frameListeners = new Set();
     this.scene = new THREE.Scene();
@@ -50,10 +50,10 @@ export class GaussianViewer {
       if(!this.firstFrameReady){
         const candidate=!!(this.ready&&this.spark.activeSplats>0&&this.spark.orderingTexture);
         if(candidate&&!this.splatSubmitted){this.splatSubmitted=true;callbacks.onNetwork?.({phase:'rendered',at:performance.now()});}
-        const evidence=this.visibilityProbe.check(this.renderer,candidate);
+        const evidence=this.visibilityProbe?.check(this.renderer,candidate)??{state:'unavailable',reason:'Production: visibility probe disabled; render submission only'};
         if(candidate&&evidence.state!=='pending'){
           this.firstFrameReady=true;
-          this.firstFrameVisible=evidence.state==='visible';
+          this.firstFrameVisible=this.visibilityProbe?evidence.state==='visible':null;
           callbacks.onNetwork?.({phase:this.firstFrameVisible?'visible':'visibility-unavailable',at:performance.now(),reason:evidence.reason});
           this.resolveFirstFrame?.();
         }

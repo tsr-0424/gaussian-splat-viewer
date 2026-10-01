@@ -1,6 +1,8 @@
 import { asViewerError } from './viewer/errors.js';
 export async function loadProjects(signal){
  try{
+  const embedded=document.querySelector('#project-catalog');
+  if(embedded)return JSON.parse(embedded.textContent);
   const response=await fetch(`${import.meta.env.BASE_URL}projects.json`,{cache:'no-cache',signal});
   if(!response.ok)throw new Error(`Projects HTTP ${response.status}`);
   const catalog=await response.json();

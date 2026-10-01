@@ -1,0 +1,132 @@
+V0.4.1 Loading Regression Report
+日期：2026-10-02
+
+1. Root Cause
+V0.4 增加了「小 main → projects.json → dynamic import 整包 Viewer（含 Spark/Three）→ UI/Renderer → model fetch」串行 critical path。V0.3 則由 HTML 直接開始載入含 Viewer 的 initial bundle；V0.4 多出的 manifest/import 邊界把 library 請求延後，且模型 fetch 被完整 library 的 download/parse/evaluation 擋住。
+原 V0.4 debug 又在 renderer/model 前 await 多個診斷模組。這影響 debug，不能把它誤稱正常 production 也下載 profiler。
+Viewer UI 與 Spark/Three 混在約 3MB chunk；UI 改動會改整包檔名，不能沿用舊版大包快取。已確認 library 版本及模型不變，bundle 增量很小，主因是啟動順序與資源／快取邊界，並非 PLY 增大。
+此前將 Viewer JS 約5.5秒只當作量測結果，未以 V0.3 同條件對照阻擋發布，這是判斷不足。本次直接比較 Git 原始碼並實測修復，不從總時間猜原因。
+歷史5.5秒沒有完整 network/CPU trace，因此不能把每一秒確定歸因於下載或 evaluation，也不推測 iPhone 為何較快。
+
+2. V0.3 vs V0.4 diff
+A：309df5e，V0.3 最後正常版本。B：b23e239，修正前 V0.4。C：本次 V0.4.1。
+main：static Viewer import 改成 catalog 完成後 dynamic import。
+ProjectPages：原 B 在 main 靜態匯入；C 僅非 Viewer 路由匯入。
+ViewerSession：B 在開始 load 前初始化 UI 並等待 debug；C fetch 已開始，debug 延後到 first-frame/ready 後。
+LoadingProfiler：只在 debug 使用，原 production 本來就沒有這個 bundle，不是 production seconds-gap 的直接來源。
+FirstSplatVisibility：B production 也做 readPixels 並 gate Ready；C production 不建立 probe，保持 V0.3 render-ready criterion。debug 保留精確取樣。
+Vite：原 B 的 Spark/Three 都在同一 Viewer chunk，並不是三個依序下載的 vendor requests；C 分離並條件式 modulepreload。
+Manifest：只有一次小 JSON 請求，沒有重試、runtime SHA256 或大型同步計算；C build-time 嵌入同一份 catalog，省掉這次 round trip。不改 Project schema。
+Model URL：同樣 SHA256 路徑的原始 PLY，沒有 redirect/新的來源／新的模型格式。
+Production verification：僅建置時執行，沒有 browser dependency；不是載入等待來源。
+
+3. Loading waterfall
+全部時間為 navigation 起點的毫秒。以下為實際冷 HTTP 快取第3次，不是平均或拼湊時間。
+                           A V0.3           B 原V0.4           C 修正版
+HTML first byte/end        56.7/57.7         55.1/55.9          57.6/58.7
+A main JS request/end      74.5/367.1        -                  -
+B main JS request/end      -                72.2/133.2         -
+A main body execution      386.2            -                  -
+B main body execution      -                135.5              -
+Manifest request/end       408.7/460.6       136.1/179.4        無請求：HTML 內 catalog
+Route resolved             manifest後       180.8              139.7
+B Viewer/Spark request/end -                181.5/473.8        -
+B Viewer body execution    -                488.0→496.5        -
+Viewer constructor         462.3            501.9              412.7
+Model fetch START          478.2            511.7              139.9
+Model response END         4644.9           4673.6             4437.6
+Spark initialized          4654.3           4682.3             4445.7
+First visible evidence     4763.4           4790.0             4568.4
+
+C main JS request/end 77.3/135.3，body execution start138.7；Viewer module request/end137.9/189.9，Three138.0/191.8，Spark138.0/386.8，Three body400.1→401.8，Spark body401.8→406.8，Viewer body406.8→406.8。main async evaluation end423.2包含await import，非純CPU。其餘精確 trace 已寫入 verification/V0.4.1-regression-results.json 的 waterfalls；不以上述近似欄位代替精確資料。
+C model URL known→fetch 是同一同步流程，不等待 Viewer import、constructor、Settings 或 profiler。HTML 對直接 Viewer route 預載 Viewer/Three/Spark，與 main/model 並行。C 的 projects.json 仍生成供相容用途，但啟動讀 embedded catalog。
+Module download 與 parse/link/evaluation 是不同概念。fixture 記錄 chunk body start/end；main 有 top-level await，整個 evaluation wall-clock 包含非同步等待，不能稱為純 CPU parse。A/B Spark 是合併 chunk，沒有獨立 Spark HTTP timing，明確標示 bundled。Browser ResourceTiming 不提供純 parser/解壓縮/GPU 初始化/compositor 時間，仍 unavailable。
+First visible：測試 fixture 在 render-ready 後以共同小區塊 framebuffer 取樣證實有非背景像素；這是插樁證據，非 compositor 顯示時間。production 完全不執行這個測試取樣。
+
+4. Bundle comparison
+原始 production output，raw/gzip bytes；gzip 統一用 Node zlib 預設，不混用不同壓縮等級。
+A initial main+Viewer+Spark+Three：3,083,486 / 1,025,565。
+B main：6,723 / 2,946；ErrorOverlay：1,645 / 915；Viewer+UI+Spark+Three：3,085,769 / 1,026,132。總 raw 3,094,137，只比 A 增10,651 bytes（约0.35%）。
+C main：5,877 / 2,455；ErrorOverlay：1,645 / 915；routing：537 / 323。
+C ViewerSession+必要UI/controls：19,631 / 7,305。
+C Spark：2,511,769 / 882,657；Three：553,762 / 136,765。
+C ProjectPages：1,962 / 965，直接 Viewer 不下載。
+C 總 raw3,095,183，gzip1,031,385。不是靠減 library 或 GS 品質提高速度，而是重排 critical path。
+另外做不部署的 attribution build，UI 區塊 C raw8,686/gzip3,348、viewer raw12,611/gzip4,970；此 build 強制拆分用來歸屬模組，不能與原 production chunk 重複加總。完整 A/B/C 模組、imports、dynamicImports、大小見 verification/V0.4.1-bundle-analysis.json。
+實際兩次 C app 變更，Spark/Three 的檔名都保持 spark-B1KKjF6G.js、three-JW_bf4rH.js，可保留 library cache。
+
+5. Critical path
+舊 B：HTML→小main→manifest→整包Viewer/Spark→UI/renderer→model request→decode/scene→render。
+新 C：HTML→小main/catalog→立即model fetch；同時 HTML modulepreload Viewer/Three/Spark→renderer/camera→consume同一response stream→scene→render。
+Gallery：只在 Gallery/Project 路由下載。Debug/Benchmark/PerformancePanel：ready 後才 import，不 gate 首幀。控制與品質功能保留。
+初次未快取的 library 約1.03MB HTTP gzip仍需下載；若仍慢，剩餘成本可能就在此 library request/evaluation 或模型 response/scene/render phase，要讀 waterfall，不以其他裝置體感推測。
+
+6. 修改檔案
+src/main.js、config.js、viewer/modelRequest.js（新增）、loader.js、ViewerSession.js、GaussianViewer.js；vite.config.js；scripts/verify-production-ui.js；package.json/lock、.gitignore。
+新增回歸工具：scripts/regression-benchmark.js、analyze-regression-bundles.js、summarize-regression.js；tests/model-request.test.js。
+新增本報告、驗證結果 JSON、README 說明。config/projects.json、原始 PLY、preset、hosting、schema 不變。
+
+7. 為什麼會變慢
+同樣 vendor bytes 的下載開始較晚，model fetch 還被延遲到 vendor 完成。大型 chunk 隨 UI 改動失去旧缓存時，這段 serial wait 尤其明顯。debug 額外 await 與 visibility gate 又增加首幀前工作。
+本機完全冷 HTTP 快取下 B 相較 A 首幀中位數只慢83ms；不能宣稱重現了歷史5.5秒或所有手機的嚴重程度。已證明啟動架構缺陷與修復效果，仍需實體裝置／真實公網 trace 驗證。
+
+8. 如何修復
+Embedded build-generated catalog，不等 JSON network；直接 Viewer 不匯入 Gallery。
+在 route 找到 URL 的同一 tick beginModelRequest，再 await Viewer。原始 response/body 傳給 Spark，沒有 clone、第二份 JS PLY buffer、格式轉換或資料刪減；換路由 abort 早期請求。
+只對直接 Viewer/legacy model URL 注入 modulepreload，沒有盲目 preload 所有工具。分離穩定 Spark/Three chunks。
+Debug 在 ready 後初始化，暫存 startup 事件後 replay，仍可量測最初 model request。response headers timestamp 在 fetch promise resolve 時記錄，避免把等待 library 當 headers latency。
+Production 不執行 FirstSplatVisibility，仍用 V0.3 已排序 splats 已提交的 readiness。
+
+9. Cold HTTP cache A/B/C（每組5次，中位數）
+ms          Nav→Request    Request→ResponseEnd    ResponseEnd→Visible    Nav→Visible
+A           473.6          4144.6                 120.1                  4707.0
+B           511.7          4161.9                 116.9                  4790.0
+C           137.0          4196.8                 122.1                  4461.2
+各欄獨立 median，不能要求相加精確等於最後一欄。
+
+10. Warm HTTP cache A/B/C（預熱不計，各5次，model transferSize=0）
+ms          Nav→Request    Request→ResponseEnd    ResponseEnd→Visible    Nav→Visible
+A           100.6          129.4                  258.4                  488.4
+B           97.3           147.9                  265.6                  514.5
+C           16.5           149.6                  280.6                  445.5
+Probe對照（原B相同程式、只停用probe，各5次warm）：ON514.5ms，OFF490.9ms，差23.6ms。包括樣本波動，不稱純 readPixels CPU成本；此桌機沒有秒級差，不能外推所有手機。
+環境：同一 Chrome154／RTX4070／1280×720／DPR1／ratio1／HIGH／396,047 splats；同一127.0.0.1:5184 HTTP origin、固定每request40ms延遲、壓縮stream8MB/s。所有variants同一98,221,187-byte原始PLY、相同HTTP gzip23,796,824 bytes（只模擬既有Pages HTTP傳輸，沒有產生或更改壓縮模型檔）。
+Cold用unique URL/no-store，所有model transferSize>0；未清GPU shader/driver/JIT cache，因此這是HTTP冷快取，不是全新OS/profile。
+Warm預熱後相同model/JS URL；A/B/C輪流導覽，C最後重測以about:blank確保真正新document，剔除同頁重複導航的無效樣本。所有有效warm model transferSize=0。沒有把preview當公網或responsive mode當實體手機。
+
+11. Model request 提前
+相較 B：冷提前374.7ms（约73%）；暖提前80.8ms（约83%）。C request 在 Viewer constructor/import完成前就已開始。各5次的原始samples有保存。
+
+12. First Splat 提前
+相較 B：冷提前328.8ms；暖提前69.0ms。
+相較 A：冷快245.8ms，暖快42.9ms；在此同環境對照已恢復接近、略快於 V0.3。
+公網與實體 iPhone18ProMax／其他手機的實際cold/warm結果仍需本人測試，不宣稱mobile regression已完全解決。
+
+13. FPS
+Cold三版本中位數約74.99FPS。快速連續warm啟動的C首2秒中位數67.88FPS，原始值不隱藏。
+後續同時段隔離其他本次建立的Viewer分頁，再比較三個2秒rolling窗口：A中位67.81、B67.96、C68.16FPS；C樣本為68.16／54.79／74.99，波動已保留。此前單獨跑C三品質固定視角8秒測量為HIGH67.89、MEDIUM67.94、LOW68.04。
+未觀察到穩定的C特有效能下降，但不能由這些短樣本承諾每台／每時段固定75FPS，也不臆測波動原因。沒有改pixel ratio presets、Gaussians、SH、LOD或camera renderer設定。
+
+14. Production 完全排除 debug
+真實production build tree-shake profiler/benchmark/panels/probe；marker驗證涵蓋內文、dynamic import名稱及probe錯誤字串。
+C瀏覽器ResourceTiming列表只有main、ErrorOverlay、routing、CSS、ViewerSession、Spark、Three、PLY；沒有ProjectPages、LoadingProfiler、Benchmark、PerformancePanel、NetworkPanel或FirstSplatVisibility請求。這些chunks不在直接Viewer的download/import graph，不會parse/evaluate。
+不是只把UI藏起來。沒有可用Chrome Coverage控制接口，本次用實際browser ResourceTiming下載清單＋原production bundle import graph／模組歸屬／marker查驗，不假裝跑過Coverage。
+
+15. npm test
+23 passed，0 failed。保留原21項，新增early fetch在renderer未完成時即開始、原response不clone、early rejection不造成unhandled import-time rejection的測試。
+
+16. npm run build
+npm install成功；npm run build、npm run build:debug、verify-production-ui成功。正式13 files，debug20 files。仍有Spark/Three大chunk提示，非build error。
+實際啟動dev5185與preview5186；正式Viewer正常，controls/reset/quality與隱藏debug確認；dev首幀後profiler與benchmark可用，沒有新增console error。原PLY SHA256仍為4e447a26c34819f1558933f12f783cdf9ff574b3213056c6d38e1c894aed9b7b。
+
+17. Git commit／部署
+修復與報告將一併提交main並使用原免費GitHub Pages workflow部署；實際commit ID與Actions結果在本檔最後補記。不開始V0.5，沒有換hosting、R2、Backend或新UI功能。
+
+可重現與證據
+node scripts/regression-benchmark.js 建立真正git snapshot A/B、working C與Boff並啟動固定環境；warm測試要真正離開再開新document，預熱不計。
+node scripts/analyze-regression-bundles.js 產生production与attribution-only分析。
+node scripts/summarize-regression.js 驗證每組5次與cache/visible條件，生成結果。
+verification/V0.4.1-regression-results.json：35個有效樣本、7組median與3個waterfall。
+verification/V0.4.1-bundle-analysis.json：各bundle sizes/imports/modules。
+verification/V0.4.1-isolated-fps.json、V0.4.1-steady-fps.json：保留不同時段實際FPS，不挑最好值。
+

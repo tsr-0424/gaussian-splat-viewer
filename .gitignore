@@ -22,4 +22,5 @@ verification/*benchmark*.txt
 verification/*network*.json
 benchmark-results/
 coverage/
+verification/regression/
 deploy/cors.local.json

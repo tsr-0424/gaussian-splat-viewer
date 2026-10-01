@@ -4,15 +4,17 @@ export async function loadGaussian(config, onProgress, signal, onNetwork) {
   // Fetch directly to distinguish HTTP / network errors without allocating a second file buffer.
   let response;
   const emit=(phase,details={})=>onNetwork?.({phase,at:performance.now(),...details});
-  emit('request',{url:config.url});
-  try { response = await fetch(config.url, { signal, headers: { Accept: 'application/octet-stream' } }); }
+  if(config.request)for(const event of config.request.events)onNetwork?.(event);
+  else emit('request',{url:config.url});
+  try { response = await (config.request?.promise??fetch(config.url, { signal, headers: { Accept: 'application/octet-stream' } })); }
   catch(error) {throw asViewerError(error,'DOWNLOAD_FAILED');}
   if (!response.ok) {
     const error = new Error(`HTTP ${response.status}`);
     error.code = response.status === 404 ? 'MODEL_NOT_FOUND' : 'DOWNLOAD_FAILED'; throw error;
   }
   if (!response.body) throw Object.assign(new Error('ReadableStream unavailable'), { code: 'DOWNLOAD_FAILED' });
-  emit('headers',{status:response.status,contentLength:response.headers.get('content-length'),acceptRanges:response.headers.get('accept-ranges'),cacheControl:response.headers.get('cache-control')});
+  if(config.request?.headersEvent)onNetwork?.(config.request.headersEvent);
+  else emit('headers',{status:response.status,contentLength:response.headers.get('content-length'),acceptRanges:response.headers.get('accept-ranges'),cacheControl:response.headers.get('cache-control')});
   const encoding=response.headers.get('content-encoding');
   const total = !encoding||encoding==='identity' ? Number(response.headers.get('content-length')) || 0 : 0;
   onProgress({ phase: 'download', percent: total ? 0 : null });

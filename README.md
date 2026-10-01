@@ -70,3 +70,7 @@ First Render 可為背景；First Splat Submission 為已排序 splats 的渲染
 所有 UI/面板最多 2 Hz 更新；隱藏面板不更新 DOM。沒有重寫 Spark，沒有降低原始模型品質。初次完整下載與 gzip 解碼不是 progressive Gaussian LOD。
 
 Profiler 另列 Viewer JS 與 Debug JS 的 import→ready wall-clock（含下載／evaluation）；若開始請求模型前有等待，可避免把這段誤算為 PLY parse。
+
+## V0.4.1 載入回歸修復
+直接 Viewer 從 HTML 內的建置 catalog 立即開始模型 fetch；HTML 條件式預載 Viewer／Spark／Three，Gallery 僅非 Viewer 路由載入。正常版不執行 visibility probe，debug／benchmark 在 first-frame ready 後初始化。模型、schema、preset 與 Pages/Release 架構不變。
+回歸版本 A=309df5e、B=b23e239；完整五次冷／暖 HTTP 快取、waterfall、bundle analysis 與限制見 V0.4.1_Loading_Regression_Report.txt、verification/V0.4.1-regression-results.json。實體手機仍須實測，不能以桌面viewport替代。

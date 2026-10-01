@@ -1,0 +1,636 @@
+{
+  "A": {
+    "production": [
+      {
+        "file": "assets/index-CinNJpQn.js",
+        "raw": 3083486,
+        "gzip": 1025565,
+        "entry": true,
+        "imports": [],
+        "dynamicImports": [],
+        "modules": [
+          "\u0000vite/modulepreload-polyfill.js",
+          "<fixture>/src/style.css",
+          "<fixture>/src/viewer/errors.js",
+          "<fixture>/src/config.js",
+          "<workspace>/node_modules/three/build/three.core.js",
+          "<workspace>/node_modules/three/build/three.module.js",
+          "<workspace>/node_modules/three/examples/jsm/postprocessing/Pass.js",
+          "<workspace>/node_modules/@sparkjsdev/spark/dist/spark.module.js",
+          "<workspace>/node_modules/three/examples/jsm/controls/OrbitControls.js",
+          "<fixture>/src/viewer/navigation.js",
+          "<fixture>/src/viewer/loader.js",
+          "<fixture>/src/performance/QualityPresets.js",
+          "<fixture>/src/performance/PerformanceMonitor.js",
+          "<fixture>/src/viewer/GaussianViewer.js",
+          "<fixture>/src/performance/DeviceCapabilities.js",
+          "<fixture>/src/performance/AdaptiveQuality.js",
+          "<fixture>/src/ui/LoadingScreen.js",
+          "<fixture>/src/ui/ErrorOverlay.js",
+          "<fixture>/src/ui/WebActions.js",
+          "<fixture>/src/main.js",
+          "<fixture>/index.html"
+        ]
+      }
+    ],
+    "attributionOnlyNotDeployed": [
+      {
+        "file": "assets/index-Azw_BO1u.js",
+        "raw": 40,
+        "gzip": 60,
+        "entry": true,
+        "imports": [
+          "assets/A-BLpOPC3s.js"
+        ],
+        "dynamicImports": [],
+        "modules": []
+      },
+      {
+        "file": "assets/A-BLpOPC3s.js",
+        "raw": 6693,
+        "gzip": 2964,
+        "entry": false,
+        "imports": [
+          "assets/rolldown-runtime-B0lUwjiP.js",
+          "assets/viewer-CDhjdSHq.js",
+          "assets/ui-BLC7CtyF.js"
+        ],
+        "dynamicImports": [],
+        "modules": [
+          "\u0000vite/modulepreload-polyfill.js",
+          "<fixture>/src/style.css",
+          "<fixture>/src/config.js",
+          "<fixture>/src/performance/QualityPresets.js",
+          "<fixture>/src/performance/PerformanceMonitor.js",
+          "<fixture>/src/performance/DeviceCapabilities.js",
+          "<fixture>/src/performance/AdaptiveQuality.js",
+          "<fixture>/src/main.js",
+          "<fixture>/index.html"
+        ]
+      },
+      {
+        "file": "assets/rolldown-runtime-B0lUwjiP.js",
+        "raw": 103,
+        "gzip": 111,
+        "entry": false,
+        "imports": [],
+        "dynamicImports": [],
+        "modules": [
+          "\u0000rolldown/runtime.js"
+        ]
+      },
+      {
+        "file": "assets/spark-ISZufStO.js",
+        "raw": 2512383,
+        "gzip": 883617,
+        "entry": false,
+        "imports": [
+          "assets/rolldown-runtime-B0lUwjiP.js",
+          "assets/three-BjueAmtM.js"
+        ],
+        "dynamicImports": [],
+        "modules": [
+          "<workspace>/node_modules/@sparkjsdev/spark/dist/spark.module.js"
+        ]
+      },
+      {
+        "file": "assets/three-BjueAmtM.js",
+        "raw": 554934,
+        "gzip": 138028,
+        "entry": false,
+        "imports": [
+          "assets/rolldown-runtime-B0lUwjiP.js"
+        ],
+        "dynamicImports": [],
+        "modules": [
+          "<workspace>/node_modules/three/build/three.core.js",
+          "<workspace>/node_modules/three/build/three.module.js",
+          "<workspace>/node_modules/three/examples/jsm/postprocessing/Pass.js",
+          "<workspace>/node_modules/three/examples/jsm/controls/OrbitControls.js"
+        ]
+      },
+      {
+        "file": "assets/ui-BLC7CtyF.js",
+        "raw": 4264,
+        "gzip": 1736,
+        "entry": false,
+        "imports": [
+          "assets/rolldown-runtime-B0lUwjiP.js"
+        ],
+        "dynamicImports": [],
+        "modules": [
+          "<fixture>/src/ui/LoadingScreen.js",
+          "<fixture>/src/ui/ErrorOverlay.js",
+          "<fixture>/src/ui/WebActions.js"
+        ]
+      },
+      {
+        "file": "assets/viewer-CDhjdSHq.js",
+        "raw": 8500,
+        "gzip": 3359,
+        "entry": false,
+        "imports": [
+          "assets/rolldown-runtime-B0lUwjiP.js",
+          "assets/three-BjueAmtM.js",
+          "assets/spark-ISZufStO.js",
+          "assets/A-BLpOPC3s.js"
+        ],
+        "dynamicImports": [],
+        "modules": [
+          "<fixture>/src/viewer/errors.js",
+          "<fixture>/src/viewer/navigation.js",
+          "<fixture>/src/viewer/loader.js",
+          "<fixture>/src/viewer/GaussianViewer.js"
+        ]
+      }
+    ]
+  },
+  "B": {
+    "production": [
+      {
+        "file": "assets/index-CkJLIpjp.js",
+        "raw": 6723,
+        "gzip": 2946,
+        "entry": true,
+        "imports": [
+          "assets/ErrorOverlay-C2oNgUsk.js"
+        ],
+        "dynamicImports": [
+          "assets/ViewerSession-Cl6jIlmu.js"
+        ],
+        "modules": [
+          "\u0000vite/modulepreload-polyfill.js",
+          "<fixture>/src/style.css",
+          "<fixture>/src/config.js",
+          "<fixture>/src/routing.js",
+          "<fixture>/src/ui/ProjectPages.js",
+          "\u0000vite/preload-helper.js",
+          "<fixture>/src/main.js",
+          "<fixture>/index.html"
+        ]
+      },
+      {
+        "file": "assets/ErrorOverlay-C2oNgUsk.js",
+        "raw": 1645,
+        "gzip": 915,
+        "entry": false,
+        "imports": [],
+        "dynamicImports": [],
+        "modules": [
+          "<fixture>/src/viewer/errors.js",
+          "<fixture>/src/ui/ErrorOverlay.js"
+        ]
+      },
+      {
+        "file": "assets/ViewerSession-Cl6jIlmu.js",
+        "raw": 3085769,
+        "gzip": 1026132,
+        "entry": false,
+        "imports": [
+          "assets/ErrorOverlay-C2oNgUsk.js"
+        ],
+        "dynamicImports": [],
+        "modules": [
+          "<workspace>/node_modules/three/build/three.core.js",
+          "<workspace>/node_modules/three/build/three.module.js",
+          "<workspace>/node_modules/three/examples/jsm/postprocessing/Pass.js",
+          "<workspace>/node_modules/@sparkjsdev/spark/dist/spark.module.js",
+          "<workspace>/node_modules/three/examples/jsm/controls/OrbitControls.js",
+          "<fixture>/src/viewer/navigation.js",
+          "<fixture>/src/viewer/loader.js",
+          "<fixture>/src/performance/QualityPresets.js",
+          "<fixture>/src/performance/PerformanceMonitor.js",
+          "<fixture>/src/viewer/FirstSplatVisibility.js",
+          "<fixture>/src/viewer/GaussianViewer.js",
+          "<fixture>/src/performance/DeviceCapabilities.js",
+          "<fixture>/src/performance/AdaptiveQuality.js",
+          "<fixture>/src/ui/LoadingScreen.js",
+          "<fixture>/src/ui/share.js",
+          "<fixture>/src/ui/WebActions.js",
+          "<fixture>/src/ui/ViewerUI.js",
+          "<fixture>/src/viewer/ViewerSession.js"
+        ]
+      }
+    ],
+    "attributionOnlyNotDeployed": [
+      {
+        "file": "assets/index-Bcnw6pBk.js",
+        "raw": 46,
+        "gzip": 66,
+        "entry": true,
+        "imports": [
+          "assets/B-B126nsId.js"
+        ],
+        "dynamicImports": [],
+        "modules": []
+      },
+      {
+        "file": "assets/AdaptiveQuality-CBg7CFWK.js",
+        "raw": 3429,
+        "gzip": 1518,
+        "entry": false,
+        "imports": [
+          "assets/rolldown-runtime-B0lUwjiP.js"
+        ],
+        "dynamicImports": [],
+        "modules": [
+          "<fixture>/src/performance/QualityPresets.js",
+          "<fixture>/src/performance/PerformanceMonitor.js",
+          "<fixture>/src/performance/DeviceCapabilities.js",
+          "<fixture>/src/performance/AdaptiveQuality.js"
+        ]
+      },
+      {
+        "file": "assets/B-B126nsId.js",
+        "raw": 5464,
+        "gzip": 2472,
+        "entry": false,
+        "imports": [
+          "assets/rolldown-runtime-B0lUwjiP.js",
+          "assets/viewer-BJmJuNH-.js",
+          "assets/ui-Hy4skmGU.js"
+        ],
+        "dynamicImports": [
+          "assets/ViewerSession-DK0Wz87u.js"
+        ],
+        "modules": [
+          "\u0000vite/modulepreload-polyfill.js",
+          "<fixture>/src/style.css",
+          "<fixture>/src/config.js",
+          "<fixture>/src/routing.js",
+          "\u0000vite/preload-helper.js",
+          "<fixture>/src/main.js",
+          "<fixture>/index.html"
+        ]
+      },
+      {
+        "file": "assets/ViewerSession-DK0Wz87u.js",
+        "raw": 80,
+        "gzip": 92,
+        "entry": false,
+        "imports": [
+          "assets/viewer-BJmJuNH-.js"
+        ],
+        "dynamicImports": [],
+        "modules": []
+      },
+      {
+        "file": "assets/rolldown-runtime-B0lUwjiP.js",
+        "raw": 103,
+        "gzip": 111,
+        "entry": false,
+        "imports": [],
+        "dynamicImports": [],
+        "modules": [
+          "\u0000rolldown/runtime.js"
+        ]
+      },
+      {
+        "file": "assets/spark-ISZufStO.js",
+        "raw": 2512383,
+        "gzip": 883617,
+        "entry": false,
+        "imports": [
+          "assets/rolldown-runtime-B0lUwjiP.js",
+          "assets/three-BjueAmtM.js"
+        ],
+        "dynamicImports": [],
+        "modules": [
+          "<workspace>/node_modules/@sparkjsdev/spark/dist/spark.module.js"
+        ]
+      },
+      {
+        "file": "assets/three-BjueAmtM.js",
+        "raw": 554934,
+        "gzip": 138028,
+        "entry": false,
+        "imports": [
+          "assets/rolldown-runtime-B0lUwjiP.js"
+        ],
+        "dynamicImports": [],
+        "modules": [
+          "<workspace>/node_modules/three/build/three.core.js",
+          "<workspace>/node_modules/three/build/three.module.js",
+          "<workspace>/node_modules/three/examples/jsm/postprocessing/Pass.js",
+          "<workspace>/node_modules/three/examples/jsm/controls/OrbitControls.js"
+        ]
+      },
+      {
+        "file": "assets/ui-Hy4skmGU.js",
+        "raw": 8665,
+        "gzip": 3359,
+        "entry": false,
+        "imports": [
+          "assets/rolldown-runtime-B0lUwjiP.js",
+          "assets/B-B126nsId.js"
+        ],
+        "dynamicImports": [],
+        "modules": [
+          "<fixture>/src/ui/ProjectPages.js",
+          "<fixture>/src/ui/ErrorOverlay.js",
+          "<fixture>/src/ui/LoadingScreen.js",
+          "<fixture>/src/ui/share.js",
+          "<fixture>/src/ui/WebActions.js",
+          "<fixture>/src/ui/ViewerUI.js"
+        ]
+      },
+      {
+        "file": "assets/viewer-BJmJuNH-.js",
+        "raw": 13188,
+        "gzip": 5218,
+        "entry": false,
+        "imports": [
+          "assets/rolldown-runtime-B0lUwjiP.js",
+          "assets/ui-Hy4skmGU.js",
+          "assets/three-BjueAmtM.js",
+          "assets/spark-ISZufStO.js",
+          "assets/AdaptiveQuality-CBg7CFWK.js"
+        ],
+        "dynamicImports": [],
+        "modules": [
+          "<fixture>/src/viewer/errors.js",
+          "<fixture>/src/viewer/navigation.js",
+          "<fixture>/src/viewer/loader.js",
+          "<fixture>/src/viewer/FirstSplatVisibility.js",
+          "<fixture>/src/viewer/GaussianViewer.js",
+          "<fixture>/src/viewer/ViewerSession.js"
+        ]
+      }
+    ]
+  },
+  "C": {
+    "production": [
+      {
+        "file": "assets/index-By6br5v0.js",
+        "raw": 5877,
+        "gzip": 2455,
+        "entry": true,
+        "imports": [
+          "assets/ErrorOverlay-C2oNgUsk.js",
+          "assets/routing-DqlXxMpz.js"
+        ],
+        "dynamicImports": [
+          "assets/ViewerSession-BdkQEoTN.js",
+          "assets/ProjectPages-tSjYDbIh.js"
+        ],
+        "modules": [
+          "\u0000vite/modulepreload-polyfill.js",
+          "<fixture>/src/style.css",
+          "<fixture>/src/config.js",
+          "<fixture>/src/viewer/modelRequest.js",
+          "\u0000vite/preload-helper.js",
+          "<fixture>/src/main.js",
+          "<fixture>/index.html"
+        ]
+      },
+      {
+        "file": "assets/ErrorOverlay-C2oNgUsk.js",
+        "raw": 1645,
+        "gzip": 915,
+        "entry": false,
+        "imports": [],
+        "dynamicImports": [],
+        "modules": [
+          "<fixture>/src/viewer/errors.js",
+          "<fixture>/src/ui/ErrorOverlay.js"
+        ]
+      },
+      {
+        "file": "assets/ProjectPages-tSjYDbIh.js",
+        "raw": 1962,
+        "gzip": 965,
+        "entry": false,
+        "imports": [
+          "assets/routing-DqlXxMpz.js"
+        ],
+        "dynamicImports": [],
+        "modules": [
+          "<fixture>/src/ui/ProjectPages.js"
+        ]
+      },
+      {
+        "file": "assets/ViewerSession-BdkQEoTN.js",
+        "raw": 19631,
+        "gzip": 7305,
+        "entry": false,
+        "imports": [
+          "assets/ErrorOverlay-C2oNgUsk.js",
+          "assets/three-JW_bf4rH.js",
+          "assets/spark-B1KKjF6G.js"
+        ],
+        "dynamicImports": [],
+        "modules": [
+          "<fixture>/src/viewer/navigation.js",
+          "<fixture>/src/viewer/loader.js",
+          "<fixture>/src/performance/QualityPresets.js",
+          "<fixture>/src/performance/PerformanceMonitor.js",
+          "<fixture>/src/viewer/GaussianViewer.js",
+          "<fixture>/src/performance/DeviceCapabilities.js",
+          "<fixture>/src/performance/AdaptiveQuality.js",
+          "<fixture>/src/ui/LoadingScreen.js",
+          "<fixture>/src/ui/share.js",
+          "<fixture>/src/ui/WebActions.js",
+          "<fixture>/src/ui/ViewerUI.js",
+          "<fixture>/src/viewer/ViewerSession.js"
+        ]
+      },
+      {
+        "file": "assets/routing-DqlXxMpz.js",
+        "raw": 537,
+        "gzip": 323,
+        "entry": false,
+        "imports": [],
+        "dynamicImports": [],
+        "modules": [
+          "<fixture>/src/routing.js"
+        ]
+      },
+      {
+        "file": "assets/spark-B1KKjF6G.js",
+        "raw": 2511769,
+        "gzip": 882657,
+        "entry": false,
+        "imports": [
+          "assets/three-JW_bf4rH.js"
+        ],
+        "dynamicImports": [],
+        "modules": [
+          "<workspace>/node_modules/@sparkjsdev/spark/dist/spark.module.js"
+        ]
+      },
+      {
+        "file": "assets/three-JW_bf4rH.js",
+        "raw": 553762,
+        "gzip": 136765,
+        "entry": false,
+        "imports": [],
+        "dynamicImports": [],
+        "modules": [
+          "<workspace>/node_modules/three/build/three.core.js",
+          "<workspace>/node_modules/three/build/three.module.js",
+          "<workspace>/node_modules/three/examples/jsm/postprocessing/Pass.js",
+          "<workspace>/node_modules/three/examples/jsm/controls/OrbitControls.js"
+        ]
+      }
+    ],
+    "attributionOnlyNotDeployed": [
+      {
+        "file": "assets/index-KDZOGmnY.js",
+        "raw": 5935,
+        "gzip": 2464,
+        "entry": true,
+        "imports": [
+          "assets/rolldown-runtime-B0lUwjiP.js",
+          "assets/viewer-Bn8MM7pT.js",
+          "assets/routing-By6mSYtm.js",
+          "assets/ui-BURSOugW.js"
+        ],
+        "dynamicImports": [
+          "assets/ViewerSession-BOx8GSDF.js",
+          "assets/ProjectPages-B9rNCa8m.js"
+        ],
+        "modules": [
+          "\u0000vite/modulepreload-polyfill.js",
+          "<fixture>/src/style.css",
+          "<fixture>/src/config.js",
+          "\u0000vite/preload-helper.js",
+          "<fixture>/src/main.js",
+          "<fixture>/index.html"
+        ]
+      },
+      {
+        "file": "assets/AdaptiveQuality-CBg7CFWK.js",
+        "raw": 3429,
+        "gzip": 1518,
+        "entry": false,
+        "imports": [
+          "assets/rolldown-runtime-B0lUwjiP.js"
+        ],
+        "dynamicImports": [],
+        "modules": [
+          "<fixture>/src/performance/QualityPresets.js",
+          "<fixture>/src/performance/PerformanceMonitor.js",
+          "<fixture>/src/performance/DeviceCapabilities.js",
+          "<fixture>/src/performance/AdaptiveQuality.js"
+        ]
+      },
+      {
+        "file": "assets/ProjectPages-B9rNCa8m.js",
+        "raw": 117,
+        "gzip": 117,
+        "entry": false,
+        "imports": [
+          "assets/ui-BURSOugW.js"
+        ],
+        "dynamicImports": [],
+        "modules": []
+      },
+      {
+        "file": "assets/ViewerSession-BOx8GSDF.js",
+        "raw": 80,
+        "gzip": 92,
+        "entry": false,
+        "imports": [
+          "assets/viewer-Bn8MM7pT.js"
+        ],
+        "dynamicImports": [],
+        "modules": []
+      },
+      {
+        "file": "assets/rolldown-runtime-B0lUwjiP.js",
+        "raw": 103,
+        "gzip": 111,
+        "entry": false,
+        "imports": [],
+        "dynamicImports": [],
+        "modules": [
+          "\u0000rolldown/runtime.js"
+        ]
+      },
+      {
+        "file": "assets/routing-By6mSYtm.js",
+        "raw": 635,
+        "gzip": 386,
+        "entry": false,
+        "imports": [
+          "assets/rolldown-runtime-B0lUwjiP.js"
+        ],
+        "dynamicImports": [],
+        "modules": [
+          "<fixture>/src/routing.js"
+        ]
+      },
+      {
+        "file": "assets/spark-ISZufStO.js",
+        "raw": 2512383,
+        "gzip": 883617,
+        "entry": false,
+        "imports": [
+          "assets/rolldown-runtime-B0lUwjiP.js",
+          "assets/three-BjueAmtM.js"
+        ],
+        "dynamicImports": [],
+        "modules": [
+          "<workspace>/node_modules/@sparkjsdev/spark/dist/spark.module.js"
+        ]
+      },
+      {
+        "file": "assets/three-BjueAmtM.js",
+        "raw": 554934,
+        "gzip": 138028,
+        "entry": false,
+        "imports": [
+          "assets/rolldown-runtime-B0lUwjiP.js"
+        ],
+        "dynamicImports": [],
+        "modules": [
+          "<workspace>/node_modules/three/build/three.core.js",
+          "<workspace>/node_modules/three/build/three.module.js",
+          "<workspace>/node_modules/three/examples/jsm/postprocessing/Pass.js",
+          "<workspace>/node_modules/three/examples/jsm/controls/OrbitControls.js"
+        ]
+      },
+      {
+        "file": "assets/ui-BURSOugW.js",
+        "raw": 8686,
+        "gzip": 3348,
+        "entry": false,
+        "imports": [
+          "assets/rolldown-runtime-B0lUwjiP.js",
+          "assets/routing-By6mSYtm.js"
+        ],
+        "dynamicImports": [],
+        "modules": [
+          "<fixture>/src/ui/ErrorOverlay.js",
+          "<fixture>/src/ui/ProjectPages.js",
+          "<fixture>/src/ui/LoadingScreen.js",
+          "<fixture>/src/ui/share.js",
+          "<fixture>/src/ui/WebActions.js",
+          "<fixture>/src/ui/ViewerUI.js"
+        ]
+      },
+      {
+        "file": "assets/viewer-Bn8MM7pT.js",
+        "raw": 12611,
+        "gzip": 4970,
+        "entry": false,
+        "imports": [
+          "assets/rolldown-runtime-B0lUwjiP.js",
+          "assets/ui-BURSOugW.js",
+          "assets/three-BjueAmtM.js",
+          "assets/spark-ISZufStO.js",
+          "assets/AdaptiveQuality-CBg7CFWK.js"
+        ],
+        "dynamicImports": [],
+        "modules": [
+          "<fixture>/src/viewer/errors.js",
+          "<fixture>/src/viewer/modelRequest.js",
+          "<fixture>/src/viewer/navigation.js",
+          "<fixture>/src/viewer/loader.js",
+          "<fixture>/src/viewer/GaussianViewer.js",
+          "<fixture>/src/viewer/ViewerSession.js"
+        ]
+      }
+    ]
+  }
+}
