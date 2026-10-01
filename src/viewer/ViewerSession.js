@@ -16,8 +16,8 @@ export function createViewerSession(container,project,scan,{pageInitializedAt,op
  let viewer,adaptive,panel,benchmark,profiler,profilerPanel,network,networkPanel,BenchmarkType,disposed=false;
  const device=detectDevice();
  document.title=`${project.title} / ${scan.title} · Spatial Scan`;
- const pendingEvents=[],pendingFrames=[];
- const emit=DEBUG?event=>{if(!profiler)pendingEvents.push(event);else{profiler.record(event);network.record(event);}}:undefined;
+ const pendingEvents=[],pendingFrames=[];let diagnosticReady=false;
+ const emit=DEBUG?event=>{if(event.phase==='ready')diagnosticReady=true;if(!profiler)pendingEvents.push(event);else{profiler.record(event);network.record(event);}}:undefined;
  function onError(error){
   error=asViewerError(error);if(disposed||error.name==='AbortError')return;
   if(viewer)viewer.ready=false;loading.hide();reset.disabled=true;qualitySelect.disabled=true;
@@ -56,7 +56,7 @@ export function createViewerSession(container,project,scan,{pageInitializedAt,op
     },
    },device,quality);
    emit?.({phase:'renderer-init-end',at:performance.now()});
-   if(DEBUG)viewer.frameListeners.add(interval=>{if(profiler)profiler.recordFrame(interval,viewer.quality);else if(pendingFrames.length<1200)pendingFrames.push([interval,viewer.quality]);});
+   if(DEBUG)viewer.frameListeners.add(interval=>{if(!diagnosticReady)return;if(profiler)profiler.recordFrame(interval,viewer.quality);else if(pendingFrames.length<1200)pendingFrames.push([interval,viewer.quality]);});
    await viewer.load(modelConfig);await viewer.waitForFirstFrame();if(disposed)return;
    adaptive.reset(performance.now());loading.complete();reset.disabled=false;qualitySelect.disabled=false;panel?.setReady(true);
    emit?.({phase:'ready',at:performance.now()});profiler?.refreshResource();

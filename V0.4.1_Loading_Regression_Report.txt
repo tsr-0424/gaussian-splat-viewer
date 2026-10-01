@@ -130,3 +130,13 @@ verification/V0.4.1-regression-results.json：35個有效樣本、7組median與3
 verification/V0.4.1-bundle-analysis.json：各bundle sizes/imports/modules。
 verification/V0.4.1-isolated-fps.json、V0.4.1-steady-fps.json：保留不同時段實際FPS，不挑最好值。
 
+
+實際公開部署補記
+修復 commit：0bf1c2e2ed3407f0a2e5f808035818f3780ddf4c。
+GitHub Actions run36914211720：completed/success，原免費Pages workflow測試／build／原模型SHA驗證／deploy均通過。
+https://tsr-0424.github.io/gaussian-splat-viewer/#/viewer/xinfuri/main 已實際載入，Reset、正常Settings無debug、console無新增error。
+公開debug一次補充（model local cache；非五次A/B、非公網完全cold）：PageInit0.687s，ModelRequestStart0.687s，ViewerJS0.410s，Network ResourceTiming0.576s，SparkLoad0.295s，SceneCPU0.035s，FirstVisible1.515s，ViewerOpen→Ready0.828s，DebugJS0.466s。模型請求在Viewer import完成前即開始，debug import在ready後。FPS面板約75，post-load snapshot約74.7。
+公開HTML確認embedded catalog與conditional modulepreload，index-By6br5v0.js／spark-B1KKjF6G.js／three-JW_bf4rH.js，排除舊HTML。
+另修正延後debug的frame buffer：只暫存Ready後的frame interval，避免replay時把Ready之前的幀計進post-load FPS。此更動只作用debug，正常production filenames／critical path不變，五次production A/B結果仍適用；23tests、正常/debug build及排除debug驗證再次通過。
+Public profile：verification/V0.4.1-public-profile.json；完整純文字：verification/V0.4.1-public-report.txt。
+實體iPhone／其他手機尚未在本任務重測，請使用直接Viewer URL作冷／暖對照；需要數據時使用/debug/並复制Benchmark Report，勿以第一次更換vendor快取與已快取的旧版混比。

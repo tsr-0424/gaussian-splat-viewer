@@ -1,0 +1,48 @@
+Spatial Scan Benchmark · V0.4
+Date: 2026-10-01T17:51:30.426Z
+Device (browser-reported platform): Windows
+Device memory hint: 32 GiB
+User agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36
+Browser: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36
+GPU: ANGLE (NVIDIA, NVIDIA GeForce RTX 4070 (0x00002786) Direct3D11 vs_5_0 ps_5_0, D3D11)
+Viewport: 1280 × 720
+DPR: 1
+Renderer ratio: 1
+Quality: AUTO → HIGH
+Navigation type: reload
+Project / Scan: 新福里 / 主掃描
+Model: main
+Model format: ply
+Gaussian count: 396047
+
+Page initialization (navigation → catalog/UI): 0.955 s
+Viewer opened at: 0.955 s
+Viewer JavaScript module load / evaluation: 5.514 s
+Debug JavaScript module load / evaluation: 0.324 s
+Model request start: 6.835 s
+Network (browser requestStart → responseEnd): 0.216 s
+Transfer incl. headers: 0.00 MB (0 bytes)
+Encoded body: 25.07 MB (25074893 bytes)
+Decoded body: 98.22 MB (98221187 bytes)
+Stream consumed bytes: 98.22 MB (98221187 bytes)
+Cache: local cache
+Delivery type: cache
+Decompression: unavailable
+PLY / format parse alone: unavailable
+Spark model load (overlaps network; includes initialization): 0.449 s
+Spark post-stream tail (not pure parse): 0.004 s
+Renderer construction (CPU): 0.029 s
+Scene attachment / camera setup (CPU): 0.046 s
+GPU initialization: unavailable
+First Render (may be background): 6.855 s
+First Splat render submission: 7.440 s
+First visible splat (sampled framebuffer evidence): 7.443 s
+Visibility limitation: sampled pixels; not compositor timing
+Ready from navigation (includes gallery dwell): 7.443 s
+Viewer open → first visible splat: 6.488 s
+Viewer open → Ready: 6.488 s
+Hidden during load: false
+Average FPS after load: 74.99
+FPS window: first 10 seconds of valid visible frame intervals; complete; 10.00 s / 750 samples
+FPS qualities sampled: HIGH
+No separate decompression/parse/GPU/compositor timing is inferred.
