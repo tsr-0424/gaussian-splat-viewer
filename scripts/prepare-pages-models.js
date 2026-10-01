@@ -4,11 +4,12 @@ import {Readable,Transform} from 'node:stream';
 import {pipeline} from 'node:stream/promises';
 import {createHash} from 'node:crypto';
 import {join} from 'node:path';
+import {projectAssets} from './projects.js';
 
 // Runs at deployment time, never in the browser. Release URLs remain stable;
 // temporary signed redirects are followed without persisting them.
-const catalog=JSON.parse(await readFile('config/models.json','utf8'));
-for(const model of catalog.models){
+const models=projectAssets(JSON.parse(await readFile('config/projects.json','utf8')));
+for(const model of models){
  if(!model.releaseUrl?.startsWith('https://github.com/')||!model.releaseUrl.includes('/releases/download/'))throw new Error(`Missing Release URL: ${model.id}`);
  if(!/^[a-f0-9]{64}$/.test(model.sha256)||!Number.isSafeInteger(model.sizeBytes))throw new Error('Invalid model integrity metadata');
  const folder=join('dist','models',model.sha256);await mkdir(folder,{recursive:true});

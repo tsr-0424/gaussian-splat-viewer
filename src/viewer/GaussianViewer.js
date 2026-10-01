@@ -4,6 +4,7 @@ import { createNavigation } from './navigation.js';
 import { loadGaussian } from './loader.js';
 import { pixelRatioFor } from '../performance/QualityPresets.js';
 import { PerformanceMonitor } from '../performance/PerformanceMonitor.js';
+import {FirstSplatVisibility} from './FirstSplatVisibility.js';
 export class GaussianViewer {
   constructor(container, callbacks, device, quality) {
     this.callbacks = callbacks;
@@ -11,6 +12,7 @@ export class GaussianViewer {
     this.container = container;
     this.quality = quality;
     this.monitor = new PerformanceMonitor();
+    this.visibilityProbe=new FirstSplatVisibility();
     this.abort = new AbortController();
     this.frameListeners = new Set();
     this.scene = new THREE.Scene();
@@ -44,8 +46,17 @@ export class GaussianViewer {
       this.navigation.update(Math.min((now-last)/1000,.05),this.speed); last=now;
       try { this.renderer.render(this.scene,this.camera); }
       catch(error) {this.failed=true;this.ready=false;this.renderer.setAnimationLoop(null);this.rejectFirstFrame?.(error);callbacks.onError(error);return;}
-      if(this.ready&&!this.firstFrameReady&&this.spark.activeSplats>0&&this.spark.orderingTexture){
-        this.firstFrameReady=true;callbacks.onNetwork?.({phase:'rendered',at:performance.now()});this.resolveFirstFrame?.();
+      if(!this.firstRenderReported){this.firstRenderReported=true;callbacks.onNetwork?.({phase:'first-render',at:performance.now()});}
+      if(!this.firstFrameReady){
+        const candidate=!!(this.ready&&this.spark.activeSplats>0&&this.spark.orderingTexture);
+        if(candidate&&!this.splatSubmitted){this.splatSubmitted=true;callbacks.onNetwork?.({phase:'rendered',at:performance.now()});}
+        const evidence=this.visibilityProbe.check(this.renderer,candidate);
+        if(candidate&&evidence.state!=='pending'){
+          this.firstFrameReady=true;
+          this.firstFrameVisible=evidence.state==='visible';
+          callbacks.onNetwork?.({phase:this.firstFrameVisible?'visible':'visibility-unavailable',at:performance.now(),reason:evidence.reason});
+          this.resolveFirstFrame?.();
+        }
       }
       const interval = this.ready ? this.monitor.tick(now) : null;
       if(interval !== null) for(const listener of this.frameListeners) listener(interval,now);
@@ -56,11 +67,13 @@ export class GaussianViewer {
     this.mesh = await loadGaussian(config,this.callbacks.onProgress,this.abort.signal,this.callbacks.onNetwork);
     if(this.disposed) {this.mesh.dispose();return;}
     if(this.failed) throw Object.assign(new Error('Graphics context failed during load'),{code:'CONTEXT_LOST'});
+    this.callbacks.onNetwork?.({phase:'scene-init-start',at:performance.now()});
     this.mesh.updateMatrixWorld(true);
     this.bounds=this.mesh.getBoundingBox().applyMatrix4(this.mesh.matrixWorld);
     if(this.bounds.isEmpty() || ![...this.bounds.min,...this.bounds.max].every(Number.isFinite)) throw Object.assign(new Error('Invalid bounds'),{code:'INVALID_MODEL'});
     this.defaultCamera=config.defaultCamera;
     this.scene.add(this.mesh); this.resetView();this.monitor.reset();this.ready=true;
+    this.callbacks.onNetwork?.({phase:'scene-init-end',at:performance.now()});
     if(import.meta.env.DEV) console.info(`Loaded ${config.name}: ${this.mesh.numSplats} Gaussian splats`);
   }
   setQuality(quality) {this.quality=quality;this.resize();}

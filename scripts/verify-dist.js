@@ -5,9 +5,9 @@ const entries=await files('dist');
 for(const file of entries){
   if(/\.(ply|spz|sog|splat|ksplat|rad)$/i.test(file))throw new Error(`Model asset must not be deployed with Viewer: ${file}`);
   if((await stat(file)).size>25*1024*1024)throw new Error(`Oversized static asset: ${file}`);
-  if(file.endsWith('.js')){
+  if(file.endsWith('.js')&&!file.replaceAll('\\','/').startsWith('dist/debug/')){
     const source=await readFile(file,'utf8');
-    for(const marker of ['Run HIGH / MEDIUM / LOW','Network diagnostics · V0.3','Performance · V0.2'])if(source.includes(marker))throw new Error(`Development code present: ${marker}`);
+    for(const marker of ['Run HIGH / MEDIUM / LOW','Network diagnostics · V0.3','Performance · V0.2','Copy Benchmark Report','Loading Profiler'])if(source.includes(marker))throw new Error(`Development code present: ${marker}`);
   }
 }
 const manifest=JSON.parse(await readFile('dist/models.json','utf8'));

@@ -5,6 +5,7 @@ export class NetworkPanel {
     parent.append(this.element);
   }
   update(s) {
+    if(this.element.closest('[hidden]'))return;
     const ms=value=>value===null?'…':`${value.toFixed(1)} ms`;
     this.element.querySelector('pre').textContent=[
       `網址開啟 → 開始 fetch: ${ms(s.requestStartMs)}`,`Response headers latency: ${ms(s.headerLatencyMs)}`,

@@ -1,7 +1,7 @@
 export class LoadingScreen {
   constructor(name) {
     this.element = document.createElement('div'); this.element.className = 'loading-screen';
-    this.element.innerHTML = '<strong></strong><div>Loading Gaussian Splat...</div><progress max="100"></progress><span role="status"></span>';
+    this.element.innerHTML = '<span class="eyebrow">SPATIAL SCAN</span><strong></strong><div>Loading Spatial Data...</div><progress max="100"></progress><span role="status"></span>';
     this.element.querySelector('strong').textContent = name;
     document.body.append(this.element); this.update({ phase: 'download', percent: null });
   }
@@ -12,7 +12,7 @@ export class LoadingScreen {
     this.element.querySelector('[role=status]').textContent = phase === 'decode' ? '解碼中…' : percent === null ? '載入中…' : `${percent}%`;
   }
   complete() {
-    this.element.querySelector('[role=status]').textContent='100%';
+    this.element.querySelector('[role=status]').textContent='Ready';
     this.element.classList.add('complete');this.element.setAttribute('aria-hidden','true');
     this.fadeTimer=setTimeout(()=>{this.element.hidden=true;},500);
   }

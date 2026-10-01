@@ -1,15 +1,20 @@
+import {shareData} from './share.js';
 export class WebActions {
-  constructor() {
+  constructor({normalBase}={}) {
     this.share=document.querySelector('#share');this.fullscreen=document.querySelector('#fullscreen');this.status=document.querySelector('#web-status');
     this.copyField=document.querySelector('#copy-link');
+    const data=()=>shareData(document.title,location.href,normalBase);
+    this.copy=async()=>{
+      try{await navigator.clipboard.writeText(data().url);this.status.textContent='連結已複製';}
+      catch{this.copyField.value=data().url;this.copyField.hidden=false;this.copyField.focus();this.copyField.select();this.status.textContent='請複製下方網址';}
+    };
     this.onShare=async()=>{
-      const data={title:document.title,url:location.href};
+      const payload=data();
       if(navigator.share){
-        try{await navigator.share(data);this.status.textContent='已開啟分享';return;}
+        try{await navigator.share(payload);this.status.textContent='已開啟分享';return;}
         catch(error){if(error.name==='AbortError')return;}
       }
-      try{await navigator.clipboard.writeText(data.url);this.status.textContent='連結已複製';}
-      catch{this.copyField.value=data.url;this.copyField.hidden=false;this.copyField.focus();this.copyField.select();this.status.textContent='請複製下方網址';}
+      await this.copy();
     };
     this.onFullscreen=async()=>{
       try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen();}

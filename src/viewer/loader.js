@@ -4,7 +4,7 @@ export async function loadGaussian(config, onProgress, signal, onNetwork) {
   // Fetch directly to distinguish HTTP / network errors without allocating a second file buffer.
   let response;
   const emit=(phase,details={})=>onNetwork?.({phase,at:performance.now(),...details});
-  emit('request');
+  emit('request',{url:config.url});
   try { response = await fetch(config.url, { signal, headers: { Accept: 'application/octet-stream' } }); }
   catch(error) {throw asViewerError(error,'DOWNLOAD_FAILED');}
   if (!response.ok) {
@@ -30,6 +30,7 @@ export async function loadGaussian(config, onProgress, signal, onNetwork) {
       }catch(error){controller.error(asViewerError(error,'DOWNLOAD_FAILED'));}
     },cancel(reason){return reader.cancel(reason);},
   });
+  emit('spark-start');
   const mesh = new SplatMesh({ stream, streamLength: total || undefined,
     fileName: decodeURIComponent(new URL(config.url, location.href).pathname.split('/').pop()),
   });

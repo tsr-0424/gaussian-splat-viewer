@@ -1,0 +1,51 @@
+Gaussian Splat Web Viewer V0.4 完成回報
+日期：2026-10-02
+
+1. 新增／修改檔案
+新增 config/projects.json、scripts/projects.js、verify-production-ui.js、.env.debug、src/routing.js、LoadingProfiler.js、LoadingProfilerPanel.js、ProjectPages.js、ViewerUI.js、share.js、ViewerSession.js、FirstSplatVisibility.js 及 projects/loading-profiler tests。
+修改 main/config、GaussianViewer/loader、LoadingScreen/PerformancePanel/NetworkPanel/WebActions/ErrorOverlay、style/index、Vite、Pages workflow、prepare/verify scripts、package/lock、README/DEPLOYMENT、deployment tests；移除 config/models.json 作為設定來源。
+
+2. Project manifest schema
+config/projects.json：version:1、projects[]。Project 有 id/title/description/date/location/thumbnail/scans[]。Scan 有 id/title/assetId/developmentUrl/releaseUrl/format/rotation/defaultCamera/thumbnail/metadata；metadata 包含 sizeBytes、sha256、source。建置生成 projects.json 和相容用 models.json。ID、重複項目、SHA256、大小與 camera 向量有驗證；圖片只允許 public/thumbnails 下的支援格式。
+
+3. 新增第二個 Project
+上傳自己的模型到 GitHub Release，計算檔案大小與 SHA256，新增 projects[] entry 與 scans[]，本機模型放 public/models，選用 thumbnail 放 public/thumbnails，再 push。無須改 Viewer source。README/DEPLOYMENT 有範例；測試涵蓋第二個 project 與 GitHub Pages 子路徑。
+
+4. URL routing
+首頁 #/；專案 #/project/xinfuri；Viewer #/viewer/xinfuri/main。Hash routing 可直接重載並適用 Pages 子目錄。旧 ?model=xinfuri 導向對應 scan。換頁清除 Viewer、事件、observer、WebGL 與 UI；錯誤 URL 顯示返回入口。
+公開入口：https://tsr-0424.github.io/gaussian-splat-viewer/
+診斷入口：https://tsr-0424.github.io/gaussian-splat-viewer/debug/#/viewer/xinfuri/main
+
+5. Loading Profiler 量測
+performance.now 記錄 navigation 基準與 viewer-open 基準，避免 Gallery 停留時間被誤算成模型載入。ResourceTiming／PerformanceObserver 取真正 requestStart→responseEnd；Spark 與 loader 事件記錄模型生命週期。面板最多 2Hz 更新，關閉時跳過 DOM 更新。載入後前 10 秒有效可見 frame interval 計算 FPS；背景中斷則不提供誤導的完整平均。
+
+6. 可可靠取得的 timing
+同 origin 或 TAO 允許的 request/network、transferSize（含 headers）、encodedBodySize、decodedBodySize；CPU renderer construction、scene attachment/camera setup；Spark initialized；首個背景 render 與首個 splat submission 分開。
+First visible splat 以啟動時有限次小區塊 framebuffer 取樣確認非背景像素，非 compositor 顯示時間。若無法確認就 unavailable，不推定成功。取樣結束後不持續 readPixels。
+本機 direct-load 範例：Page Init 0.050s、Network 0.233s、Spark load 0.512s、Scene CPU 0.051s、First visible 0.768s、Viewer open→Ready 0.718s。這是本機結果，不代表公開網路。
+
+7. 無法可靠取得的 timing
+解壓縮單獨耗時、純 PLY parse、GPU initialization 和 compositor presentation 都標 unavailable。Spark load 包含網路與初始化；post-stream tail 不能稱純 parse。Edge cache 不可從本地 cache 指標推定。跨 origin timing 未獲授權、API 缺失或 Service Worker 時標示限制；不猜手機比桌機快的原因。
+
+8. Benchmark Report
+Copy Benchmark Report 輸出純文字：UTC 日期、platform/browser/GPU、device memory hint、viewport/DPR/resolution/pixel ratio、品質、project/scan/format/count、所有 timing、transfer/encoded/decoded bytes、cache、可見性限制、FPS 取樣狀態及品質。Clipboard 不可用時顯示可手動複製的文字。保留原 HIGH/MEDIUM/LOW benchmark 與 JSON export。
+
+9. UI 架構
+main 負責 catalog 與 routing；ProjectPages 負責 Gallery/Project；ViewerSession 組合既有 Viewer；ViewerUI 負責操作；profiler 與診斷獨立模块。Gallery 使用橫列，沒有外部字体或追蹤。左上名稱／返回，右上 Fullscreen/Share/Settings，底部 Orbit/Explore、Reset、Quality。Explore 是沿地面平移模式，不宣稱已提供碰撞或完整第一人稱導覽。
+正式 JS 不含診斷模組；debug 是獨立靜態入口並共用模型，不複製第二份大型 PLY。debug 分享會轉回正常 Viewer URL。
+
+10. Mobile 處理
+100dvh、viewport-fit=cover、safe-area、至少 44px 操作、窄畫面換行。390×844 viewport 實測無水平溢出，模型可見、上下操作不重疊。沿用 OrbitControls 單指 rotate、雙指 dolly/pan，不依手機 UA 直接降為 LOW。Web Share API 可用時呼叫，否則 Copy Link。這次使用桌面瀏覽器手機 viewport 測試；不冒稱已在實體 iOS/Android 重跑全部 V0.4 操作。
+
+11. npm test
+21 tests passed，0 failed。涵蓋既有部署／CORS設定與品質基礎、新 catalog/routing/share、ResourceTiming availability/cache、重複 request 篩選、FPS 中斷與可見性探測限制。
+
+12. npm install／npm run build
+npm install 成功；npm run build 成功；npm run build:debug 成功；verify-production-ui 成功。正式輸出 9 files，debug 16 files。Spark renderer chunk 約 3.09 MB，有 Vite chunk-size 提示，非建置錯誤。沒有修改原始 PLY 或刪 Gaussian。
+本機 dev 5174 與 production preview 4174 實際啟動；正常版無 debug UI，debug 頁成功讀同一模型。測試流程及 controls/reset/quality/fullscreen/copy link/profiler 無新增 console error。
+
+13. FPS 影響
+RTX 4070、Chrome 154、1280×720、DPR1、396,047 Gaussians；每級暖機3秒／測量8秒：HIGH 74.99 FPS、ratio1、1280×720；MEDIUM 74.99 FPS、ratio1、1280×720；LOW 74.99 FPS、ratio0.75、960×540。p95 frame interval 約13.4ms。接近75Hz更新率，這台未觀察到相較 V0.3 約75FPS 的明顯下降，但不能推定所有硬體無影響。DPR1時 HIGH/MEDIUM effective ratio 相同屬預期。
+
+14. 下一階段建議
+先用公開 debug 報告收集實體 iOS Safari、Android Chrome、桌機冷／暖 cache 同條件資料。補真實 thumbnail、第二個專案與 scan metadata；再評估模型壓縮／LOD／progressive loading 的可量測效益。先保持零成本 Pages/Release、無 Backend，不提前引入 BIM/測量等功能。

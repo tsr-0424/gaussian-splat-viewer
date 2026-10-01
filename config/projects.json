@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "projects": [{
+    "id": "xinfuri",
+    "title": "新福里",
+    "description": "以 Gaussian Splat 記錄空間，保留現場的光線與細節。",
+    "date": null,
+    "location": null,
+    "thumbnail": null,
+    "scans": [{
+      "id": "main",
+      "title": "主掃描",
+      "assetId": "xinfuri",
+      "developmentUrl": "models/新福里.ply",
+      "modelUrl": "projects/xinfuri/scans/scan-001/versions/4e447a26c34819f1/model.ply",
+      "releaseUrl": "https://github.com/tsr-0424/gaussian-splat-viewer/releases/download/model-xinfuri-v1/xinfuri.ply",
+      "format": "ply",
+      "thumbnail": null,
+      "rotation": [3.141592653589793, 0, 0],
+      "defaultCamera": null,
+      "metadata": {
+        "source": "Scaniverse",
+        "sizeBytes": 98221187,
+        "sha256": "4e447a26c34819f1558933f12f783cdf9ff574b3213056c6d38e1c894aed9b7b"
+      }
+    }]
+  }]
+}

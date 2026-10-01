@@ -4,7 +4,8 @@ import {readFileSync} from 'node:fs';
 import {generateManifest} from '../scripts/manifest.js';
 import {createCors} from '../scripts/cors.js';
 import {NetworkDiagnostics} from '../src/performance/NetworkDiagnostics.js';
-const catalog=JSON.parse(readFileSync('config/models.json','utf8'));
+import {projectAssets} from '../scripts/projects.js';
+const catalog={version:1,defaultModelId:'xinfuri',models:projectAssets(JSON.parse(readFileSync('config/projects.json','utf8')))};
 test('local and production manifests choose different assets without exposing local paths',()=>{
   const local=generateManifest(catalog,{development:true});assert.equal(local.models[0].modelUrl,'/models/新福里.ply');
   const remote=generateManifest(catalog,{assetBase:'https://assets.example.com'});

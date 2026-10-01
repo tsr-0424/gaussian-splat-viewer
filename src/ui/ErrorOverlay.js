@@ -1,5 +1,5 @@
 const MESSAGES = {
-  MODEL_CONFIG: '模型設定尚未完成或無法讀取，請確認 models.json 與公開模型網址。',
+  MODEL_CONFIG: '專案設定無法讀取，請確認 projects.json 與模型網址。',
   MODEL_NOT_FOUND: '找不到模型，請確認模型檔案位置。',
   DOWNLOAD_FAILED: '模型下載失敗，請檢查網路與模型網址。',
   INVALID_MODEL: '模型格式不支援或檔案損壞，請使用有效的 Gaussian Splat 檔案。',

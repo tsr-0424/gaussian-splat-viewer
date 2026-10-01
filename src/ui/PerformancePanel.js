@@ -4,6 +4,7 @@ export class PerformancePanel {
     this.element.setAttribute('aria-label','Performance Panel');
     this.element.innerHTML='<h2>Performance · V0.2</h2><pre class="metrics"></pre><h3>Benchmark</h3><p>固定視角，每級暖機 3 秒、測量 8 秒。</p><button class="run">Run HIGH / MEDIUM / LOW</button> <button class="cancel" disabled>Cancel</button> <button class="export" disabled>Export JSON</button><p class="bench-status" role="status"></p><pre class="results"></pre>';
     this.element.querySelector('.run').onclick=onBenchmark;this.element.querySelector('.export').onclick=onExport;
+    const close=document.createElement('button');close.textContent='Close';close.setAttribute('aria-label','Close performance panel');close.onclick=()=>{this.element.hidden=true;};this.element.prepend(close);
     this.element.querySelector('.cancel').onclick=onCancel;document.body.append(this.element);
   }
   toggle() {this.element.hidden=!this.element.hidden;}
