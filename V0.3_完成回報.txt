@@ -1,0 +1,18 @@
+V0.3 免費部署驗證（2026-10-02）
+
+1. 策略：完全停用 R2/Cloudflare 部署，改 GitHub Pages + GitHub Releases；不需信用卡、付費方案、Backend 或 Git LFS。
+2. Source 已推送：https://github.com/tsr-0424/gaussian-splat-viewer 。使用者已完成 GitHub 身分驗證，repository 已切換 Public。
+3. Release 已建立：model-xinfuri-v1；asset xinfuri.ply，98,221,187 bytes。
+4. Release SHA256 與原始檔相同：4e447a26c34819f1558933f12f783cdf9ff574b3213056c6d38e1c894aed9b7b。原始 files/新福里.ply 與 public/models/新福里.ply 完整保留。
+5. CORS 實測：公開 PowerToys Release 小檔 302 → 200，redirect/最終 response 都無 Access-Control-Allow-Origin；瀏覽器以 loader 相同 fetch 設定回報 Failed to fetch。tests/release-cors.html 可重現。
+6. 免費替代：Actions 在 build 時下載 Release asset、核對大小/SHA256，再放 Pages artifact。瀏覽器走 Pages 同 origin models/<SHA256>/xinfuri.ply。原始模型不進 source Git。
+7. 修改：manifest/Vite 子路徑設定、.env.production、Pages workflow、prepare-pages-models.js、verify-pages.js、部署文件；移除 Wrangler dependency/config/登入 scripts；V0.2 品質/controls 核心維持。
+8. npm install：成功，19 packages audited，0 vulnerabilities。npm test：12 passed。npm run build：成功，有 Spark bundle >500kB 的非阻擋提示。正式 JS 無開發診斷面板。
+9. 本機正式版 preview：模型正常、75 FPS（RTX4070/桌機瀏覽器/此視角）；HIGH/MEDIUM/LOW、Reset、resize 正常，console error 0。這不是公開網路 benchmark。
+10. 本機與公開網站手機尺寸390x844：canvas390x844、scrollWidth390，無橫向溢出；本地視覺 Worker 確認模型可見、按鈕未越界、無錯誤。桌機1280x800 resize正常。未宣稱實體iOS/Android實測。
+11. 公開部署成功：https://tsr-0424.github.io/gaussian-splat-viewer/ 。Actions run 36892402092 全步驟成功，37秒完成。未登入 HEAD：200、Content-Length98221187、Cache-Control max-age=600、Accept-Ranges bytes；Range0-15：206、Content-Range bytes0-15/98221187。公開瀏覽器實際渲染成功、75 FPS；HIGH/MEDIUM/LOW/AUTO、Reset與resize檢查通過，console error 0。
+12. 限制與下一步：Pages published site 1GB、soft bandwidth100GB/month；模型首次完整下載約98MB，不是 progressive LOD。先完成公開驗證，再由使用者手機測試；未來可新增壓縮副本/LOD，不改原始PLY。
+
+完整步驟：DEPLOYMENT.md。
+
+

@@ -1,12 +1,16 @@
 <!doctype html><meta charset="utf-8"><title>Release CORS probe</title>
 <h1>GitHub Release browser fetch test</h1>
 <label>Asset URL <input id="url" size="100" value="https://github.com/microsoft/PowerToys/releases/download/v0.101.2362.0/GroupPolicyObjectFiles-0.101.2362.0.zip"></label>
-<button id="run">Test fetch</button><pre id="result">Ready</pre>
+<button id="run">Test fetch</button><button id="first">Test first chunk</button><pre id="result">Ready</pre>
 <script type="module">
 document.querySelector('#run').onclick=async()=>{
  const result=document.querySelector('#result'); result.textContent='Testing';
  try {const response=await fetch(document.querySelector('#url').value,{headers:{Accept:'application/octet-stream'}});
  const buffer=await response.arrayBuffer();result.textContent=JSON.stringify({ok:response.ok,status:response.status,url:response.url,redirected:response.redirected,type:response.type,bytes:buffer.byteLength,headers:Object.fromEntries(response.headers)},null,2);
  }catch(error){result.textContent=JSON.stringify({ok:false,name:error.name,message:error.message});}
+};
+document.querySelector('#first').onclick=async()=>{
+ const result=document.querySelector('#result');result.textContent='Testing first chunk';const start=performance.now();
+ try{const response=await fetch(document.querySelector('#url').value,{headers:{Accept:'application/octet-stream'}});const reader=response.body.getReader();const chunk=await reader.read();await reader.cancel();result.textContent=JSON.stringify({status:response.status,bytes:chunk.value?.byteLength,latencyMs:performance.now()-start,headers:Object.fromEntries(response.headers)},null,2);}catch(error){result.textContent=JSON.stringify({error:error.message});}
 };
 </script>

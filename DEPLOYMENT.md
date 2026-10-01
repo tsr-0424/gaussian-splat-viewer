@@ -36,3 +36,19 @@ Pages 有 published-site 1 GB、soft bandwidth 100 GB/month 等限制；約 98 M
 https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits
 https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site
 https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases
+
+## 已完成公開部署
+
+公開網址：https://tsr-0424.github.io/gaussian-splat-viewer/
+Release：https://github.com/tsr-0424/gaussian-splat-viewer/releases/tag/model-xinfuri-v1
+已確認 Public repository、Pages Actions source、workflow run 36892402092 成功（37秒）。原始模型大小/SHA256均通過部署腳本驗證；未登入Pages模型HTTP200，Range16bytes回傳206。模型Cache-Control由Pages提供max-age=600，使用完整SHA256路徑避免版本混淆，不宣稱自訂immutable cache header。
+
+自己的xinfuri.ply Release URL也已實際瀏覽器fetch測試，同樣Failed to fetch；HEAD確認302→200皆無ACAO。Pages同origin解決此問題。Pages本身提供ACAO:*，這是平台行為，沒有自行放寬伺服器CORS設定。
+
+## 公開瀏覽器驗證完成
+
+公開頁面載入完整Gaussian、桌機約75 FPS；HIGH/MEDIUM/LOW/AUTO切換、Reset、resize通過，console error 0。另一公開分頁390x844的canvas390x844、scrollWidth390；本地視覺Worker確認模型可見、按鈕未越界、無Loading或錯誤。實體iOS/Android尚未測試，touch由既有OrbitControls單指旋轉/雙指縮放平移支援。
+
+Pages實際gzip傳輸Content-Length25,074,893 bytes，解碼後模型98,221,187 bytes；同origin可讀Content-Encoding，loader正確採用indeterminate progress。首個body chunk小型測試200、19,610 bytes、約295.9ms（這次測試觀察值，不是完整下載時間或效能保證）。
+
+Actions成功run提供Node20 action runtime轉換為Node24的非阻擋提示，以及ubuntu-latest未來映像遷移公告；build另有Spark bundle大小提示。沒有將這些提示當成Viewer console error。
