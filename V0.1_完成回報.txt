@@ -1,0 +1,61 @@
+Gaussian Splat Web Viewer V0.1 — 完成回報
+
+專案位置：T:\AI_Workflow\07_Projects\3dgs\webview
+本機網址：http://127.0.0.1:5173/
+
+完成內容
+- Vite + Three.js 0.186.1 + Spark 2.3.0。
+- 完全自架的靜態 Viewer，沒有 React、Backend 或第三方展示平台。
+- 使用 Spark SplatMesh 解碼與渲染 Gaussian PLY，包含位置、尺度、旋轉、透明度與 SH／顏色。
+- 模型：public/models/新福里.ply；原始檔保留在 files/新福里.ply。
+- 全視窗深色背景、Perspective Camera、自動取景。
+- 滑鼠旋轉、滾輪縮放、右鍵平移、WASD／QE 鍵盤移動。
+- Reset View、Loading 進度、FPS、視窗尺寸自動調整。
+- 程式分為模型設定、UI、Viewer 與 navigation 模組。
+- 已建立 README.md、package-lock.json 與驗證紀錄。
+
+驗證結果
+- npm install 成功，套件檢查 0 vulnerabilities。
+- npm run build 成功，輸出於 dist/。
+- development server 已實際啟動。
+- 瀏覽器成功載入 396,047 個 Gaussian，Loading 100%。
+- 測試時約 75 FPS；效能依硬體與視窗尺寸而異。
+- 載入、Reset View、旋轉與縮放後 console error 為 0。
+- 390 × 844 響應式測試通過。
+- 原始模型與 public 模型 SHA256 一致。
+- 本地視覺 Worker 確認畫面有可見三維場景，UI 未遮擋。
+
+已知限制
+- Spark／顯示驅動產生一則 shader signed/unsigned mismatch warning，未阻止渲染。
+- Vite 提示 JavaScript chunk 較大；build 仍成功。
+- 視覺 Worker 提到右側局部模糊，尚未判定是掃描資料或渲染造成。
+- 鍵盤操作與右鍵平移已實作，未逐項自動化測試。
+- 初始取景使用 Gaussian 中心範圍，遠方離群點可能讓視角較遠。
+
+啟動方式（PowerShell）
+cd T:\AI_Workflow\07_Projects\3dgs\webview
+npm install
+npm run dev
+
+正式建置與本機預覽
+npm run build
+npm run preview
+預覽網址：http://127.0.0.1:4173/
+停止 server：Ctrl+C。
+
+更換模型
+1. 將 Gaussian PLY／SPZ／SOG 放入 public/models/。
+2. 修改 src/config.js 的 name、url 與 rotation。
+3. 目前預設 X 軸旋轉 180 度；Y-up 輸出可改為 [0,0,0]。
+4. 模型檔預設不納入 Git；clone 後需自行放入模型。
+
+未來部署
+- GitHub 存放程式碼；Cloudflare Pages 使用 npm run build，輸出 dist。
+- R2 模型可透過 src/config.js 的 HTTPS URL 設定，需配置 CORS。
+- Vite 會將 public 檔案複製到 dist；改用 R2 時需移除 public 的大型模型。
+- 目前尚未部署到 GitHub、Cloudflare Pages 或 R2。
+- Point Cloud 切換、Section Plane、Measurement、Annotation、IFC 與 Gallery 尚未實作。
+
+詳細說明：README.md
+驗證紀錄：verification/RESULTS.md
+驗證畫面：verification/viewer.png

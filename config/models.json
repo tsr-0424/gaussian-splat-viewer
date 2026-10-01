@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "defaultModelId": "xinfuri",
+  "models": [
+    {
+      "id": "xinfuri",
+      "name": "新福里",
+      "modelUrl": "projects/xinfuri/scans/scan-001/versions/4e447a26c34819f1/model.ply",
+      "developmentUrl": "models/新福里.ply",
+      "format": "ply",
+      "thumbnail": null,
+      "description": "Scaniverse Gaussian Splat export",
+      "rotation": [
+        3.141592653589793,
+        0,
+        0
+      ],
+      "defaultCamera": null,
+      "sizeBytes": 98221187,
+      "sha256": "4e447a26c34819f1558933f12f783cdf9ff574b3213056c6d38e1c894aed9b7b",
+      "releaseUrl": "https://github.com/tsr-0424/gaussian-splat-viewer/releases/download/model-xinfuri-v1/xinfuri.ply"
+    }
+  ]
+}

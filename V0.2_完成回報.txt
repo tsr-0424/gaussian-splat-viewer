@@ -1,0 +1,154 @@
+Gaussian Splat Web Viewer V0.2 — 完成回報
+日期：2026-10-01（Asia/Taipei）
+專案：T:\AI_Workflow\07_Projects\3dgs\webview
+開發網址：http://127.0.0.1:5173/
+
+1. 修改了哪些檔案
+
+修改：
+- index.html：極簡品質選單、開發模式 Performance 開關。
+- package.json / package-lock.json：版本 0.2.0，新增 npm test；dependencies 不變。
+- src/main.js：裝置檢測、software renderer 啟動阻擋、品質／UI 協調、錯誤處理與 HMR 清理。
+- src/style.css：Loading 淡出、警示、診斷面板與行動尺寸樣式。
+- src/viewer/GaussianViewer.js：串流 loader、resolution preset、monitor、resize／DPR、context lost 與清理。
+- src/viewer/navigation.js：明確指定 OrbitControls 單指旋轉、雙指縮放／平移；benchmark 暫停操作。
+- README.md：V0.2 使用、品質、benchmark、限制與部署說明。
+
+新增：
+- src/viewer/loader.js：下載與 Spark Gaussian 解碼；HTTP／格式／網路錯誤分類。
+- src/viewer/errors.js：Error／字串／null 正規化，保留 AbortError。
+- src/performance/DeviceCapabilities.js：WebGL 能力與 software renderer 判斷。
+- src/performance/PerformanceMonitor.js：兩秒 rolling frame interval 統計。
+- src/performance/QualityPresets.js：品質設定與像素預算，保留未來 LOD／SH 擴充位置。
+- src/performance/AdaptiveQuality.js：AUTO 狀態、hysteresis、cooldown。
+- src/performance/Benchmark.js：固定視角三品質測試與 JSON 匯出。
+- src/ui/LoadingScreen.js、PerformancePanel.js、ErrorOverlay.js：各 UI 職責獨立。
+- tests/performance.test.js、errors.test.js：七項回歸測試。
+- tests/browser-errors.html、invalid.ply：開發用錯誤測試頁與刻意無效的測試資料。
+- verification/V0.2-benchmark-desktop.json、V0.2-benchmark-small.json：實測原始紀錄。
+- verification/V0.2-desktop.png：畫面截圖。
+- 本文字檔與 verification/V0.2_LESSONS.md。
+
+依 AGENTS.md 系統自進化要求，另追加：
+- T:\AI_Workflow\00_System\Master_Index.md：登記可重用 Viewer／performance 模組。
+- T:\AI_Workflow\00_System\Lessons_Learned.md：記錄 Spark error、Vite fallback、benchmark 與 Worker UTF-8 注意事項。
+
+模型未修改、未刪除 Gaussian、未降低原始 SH、未重做 GS。
+files/新福里.ply 與 public/models/新福里.ply 的 SHA256 均為：
+4E447A26C34819F1558933F12F783CDF9FF574B3213056C6D38E1C894AED9B7B
+
+2. Performance Monitor 如何運作
+
+requestAnimationLoop 以時間戳記量測 frame interval；固定大小 ring buffer 保存約兩秒樣本，維護總和，避免每 frame 排序或讀取 GPU 資訊。
+FPS = 1000 / 平均 frame interval；Frame Time 也是此平均值，不是 GPU 計時。
+每 500 ms 更新 HUD／面板；面板關閉時不更新面板文字。
+只有模型 ready、分頁可見時記錄；resize／DPR 改變、分頁切換會清除歷史；超過一秒的排程中斷會重設統計。
+
+面板顯示：
+- FPS、Frame Time、實際 Canvas Resolution、Viewport Size。
+- devicePixelRatio、Renderer Pixel Ratio、品質模式與有效 preset。
+- Spark numSplats（此模型 396,047）。
+- WebGL／WebGL2、WebGPU API 是否存在；實際渲染是 WebGL2。
+- GPU Renderer 與 hardware-likely／software／unknown。
+- 可用時的 JS heap、RAM hint；Three.js texture／geometry 數量。
+
+GPU 名稱僅初始化時查詢一次。Memory 缺少 API 時顯示 Unavailable；JS heap 不代表完整 GPU／WASM／Worker 記憶體，資源計數也不是 GPU bytes。
+Performance Panel 與 Benchmark 僅開發模式載入；正式 dist 已確認不含面板／benchmark 文案與模組。
+
+3. Adaptive Quality 邏輯
+
+預設 AUTO；不使用 userAgent 選品質。
+- 疑似 software：使用者先選低畫質才載入，該次執行最高 LOW。
+- GPU 資訊不可見：MEDIUM 起步。
+- 可見且未匹配 software：一般像素量 HIGH 起步；預期 framebuffer 大於 200 萬像素時 MEDIUM 起步。
+
+只在樣本至少五筆、涵蓋至少一秒、模型 ready 且分頁可見時判斷兩秒 rolling average：
+- 低於 28 FPS 持續 4 秒：降低一級。
+- 高於 55 FPS 持續 10 秒：提高一級。
+- 28–55 FPS：維持品質。
+- 啟動完成、每次切換、resize 或分頁恢復後：12 秒 cooldown。
+- 單次短暫 drop 不切換；手動 HIGH／MEDIUM／LOW 不自動改動。
+
+此設計以穩定約 30–60 FPS 為目標，不會限制高效能硬體只能跑 60 FPS，也不能保證極弱硬體一定達到 30 FPS。
+Benchmark 期間暫停 AUTO 與操作；完成／取消後恢復原模式。
+
+4. 如何判斷 software renderer
+
+先建立 WebGL2 context，另測 WebGL 可用性；Viewer 使用同一個已檢測的 WebGL2 context。
+瀏覽器允許時讀 WEBGL_debug_renderer_info 的 unmasked renderer。
+匹配 SwiftShader、Microsoft Basic Render Driver／Display、llvmpipe、softpipe、software rasterizer／renderer、lavapipe、swrast、WARP。
+沒有針對 NVIDIA 寫死；Intel、AMD、Apple、NVIDIA 均正常接受。
+GPU 名稱被隱私設定隱藏時標示 unknown，不把它誤判為 software。
+
+疑似 software 時顯示：
+「目前瀏覽器似乎沒有啟用圖形硬體加速，3D 模型可能無法流暢顯示。」
+提供「低畫質模式」與「重新檢測」；重新檢測會重新整理並建立新 context。
+這是 renderer 字串的啟發式判斷，瀏覽器不保證提供完整硬體加速資訊。
+
+5. HIGH／MEDIUM／LOW 實際設定
+
+HIGH：DPR 上限 2；framebuffer 預算 4,000,000 pixels。
+MEDIUM：DPR 上限 1.25；預算 2,000,000 pixels。
+LOW：DPR 上限 0.75；預算 1,000,000 pixels。
+
+有效 ratio = min(devicePixelRatio, preset DPR cap, sqrt(pixel budget / CSS viewport area))。
+最低數值保護為 0.1；resize、瀏覽器縮放或換 DPR 時重新計算。
+小視窗 DPR=1 時 HIGH 和 MEDIUM 可能相同，避免不必要的 supersampling。
+所有 preset 只影響畫布解析度，Spark Gaussian 資料與數量不變。
+未來 LOD／Splat reduction／SH／progressive loading 可從 QualityPresets 與 Viewer.setQuality 擴充，目前未啟用。
+
+6. Desktop 實測 FPS
+
+測試環境：Windows，Codex 內嵌 Chromium（userAgent Chrome/154.0.0.0），GPU NVIDIA GeForce RTX 4070，ANGLE Direct3D11。
+模型：新福里，396,047 Gaussian。
+CSS viewport：1920 × 1080；devicePixelRatio：1。
+固定重設視角，各 preset 暖機 3 秒、收集約 8 秒 frame intervals。
+
+品質     FPS       Frame Time     Canvas Resolution   Renderer Ratio
+HIGH     74.993    13.335 ms      1920 × 1080         1.000000
+MEDIUM   74.993    13.335 ms      1885 × 1060         0.982093
+LOW      74.993    13.335 ms      1333 × 750          0.694444
+
+各 preset 的 p95 frame time 約 13.4 ms。Gaussian count 均為 396,047。
+516 × 452 小視窗三種品質同樣約 75 FPS；LOW resolution 為 387 × 339。
+三種品質幾乎相同，可能受 vsync／瀏覽器排程限制；不能據此宣稱 LOW 對所有模型都沒有收益。
+這是本機固定視角的桌面實測，不是 standalone Chrome／Edge／Firefox／Safari 全平台實測。
+
+Benchmark 使用方式：npm run dev → Performance 或 P → Run HIGH / MEDIUM / LOW。
+約 33 秒後可 Export JSON，包含 FPS、frame time、p95、解析度、ratio、GPU、browser、模型與時間。
+resize／切換到背景會取消；software renderer 只測 LOW。
+
+7. npm run build 與驗證結果
+
+npm install：成功，19 packages audited，0 vulnerabilities。
+npm test：7 tests passed，0 failed。
+npm run build：成功；輸出 dist/。
+正式 JS 約 3,079.68 kB（gzip 1,036.27 kB）；Vite 有大型 chunk 提示，非 build failure。
+npm run dev：實際 Viewer 已運行於 127.0.0.1:5173。
+npm run preview：正式 build 實際載入並渲染成功；預覽測完已停止。
+
+瀏覽器驗證：
+- Gaussian 正常載入與 render；Loading 真實 byte progress，沒有 total 時 indeterminate；完成淡出。
+- Performance Panel、三品質 benchmark、手動品質切換正常。
+- Cancel benchmark 後恢復 AUTO、品質選單與 Reset View；面板初次開啟立即更新，避免稍後填入數據造成版面跳動。
+- 1920 × 1080 與 390 × 844 resize 正常。
+- 滑鼠旋轉、滾輪縮放、Shift 拖曳平移、W／E 鍵盤 smoke test、Reset View 可操作，沒有新增 error。
+- 原生 OrbitControls source 已確認單指 ROTATE、雙指 DOLLY_PAN；未做 iOS／Android 真機多指測試。
+- 實際測試 HTTP 404、無效 PLY：分別顯示找不到模型與格式錯誤訊息。
+- 以 WEBGL_lose_context 實際觸發 context lost：顯示圖形裝置中斷提示。
+- WebGL2 不支援與 software gate 的提示分支已測試；沒有切換本機到真正 software GPU。
+- 正常 Viewer 與正式 preview console error：0。刻意錯誤測試的詳細 console error 屬預期。
+- 原有 shader signed/unsigned driver warning 可能出現，沒有隱藏。
+
+修正的實際問題：Spark decoder 可 reject 字串；現在統一轉 Error，避免 Cannot create property code on string，並保留 DOMException AbortError 的唯讀 code。
+
+8. 下一階段建議
+
+優先：iPhone Safari、Android Chrome、Desktop Edge／Firefox／Safari 真機測試（touch、GPU privacy、context loss、DPR、記憶體）。
+接著：多模型與較大場景 benchmark，加入可重播 camera path，區分固定視角與移動場景效能；若需 GPU time 再研究 timer query，不把 frame interval 當 GPU time。
+再依數據決定 Spark LOD、SH quality 與 progressive loading，不直接刪除或改寫原始 PLY。
+部署階段才加入 Cloudflare Pages／R2、CORS、模型 manifest／cache；目前沒有帳號、Backend 或資料庫。
+
+完整操作說明：README.md
+桌面原始數據：verification/V0.2-benchmark-desktop.json
+小視窗數據：verification/V0.2-benchmark-small.json

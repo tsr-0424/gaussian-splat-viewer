@@ -1,0 +1,9 @@
+[
+  {
+    "AllowedOrigins": ["https://gaussian-splat-viewer.YOUR-SUBDOMAIN.workers.dev"],
+    "AllowedMethods": ["GET", "HEAD"],
+    "AllowedHeaders": ["Range", "Accept"],
+    "ExposeHeaders": ["Content-Length", "Content-Range", "Accept-Ranges", "ETag", "Cache-Control"],
+    "MaxAgeSeconds": 86400
+  }
+]

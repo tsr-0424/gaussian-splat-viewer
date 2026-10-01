@@ -1,0 +1,103 @@
+import * as THREE from 'three';
+import { SparkRenderer } from '@sparkjsdev/spark';
+import { createNavigation } from './navigation.js';
+import { loadGaussian } from './loader.js';
+import { pixelRatioFor } from '../performance/QualityPresets.js';
+import { PerformanceMonitor } from '../performance/PerformanceMonitor.js';
+export class GaussianViewer {
+  constructor(container, callbacks, device, quality) {
+    this.callbacks = callbacks;
+    this.device = device;
+    this.container = container;
+    this.quality = quality;
+    this.monitor = new PerformanceMonitor();
+    this.abort = new AbortController();
+    this.frameListeners = new Set();
+    this.scene = new THREE.Scene();
+    this.scene.background = new THREE.Color('#10151c');
+    this.camera = new THREE.PerspectiveCamera(60,1,.01,10000);
+    this.camera.position.set(0,0,5);
+    this.renderer = new THREE.WebGLRenderer({canvas:device.canvas,context:device.context,antialias:false});
+    container.append(this.renderer.domElement);
+    this.spark = new SparkRenderer({renderer:this.renderer});
+    this.scene.add(this.spark);
+    this.navigation = createNavigation(this.camera,this.renderer.domElement);
+    this.speed = 1;
+    this.resize = () => {
+      const {width,height} = container.getBoundingClientRect();
+      this.camera.aspect = width/Math.max(height,1); this.camera.updateProjectionMatrix();
+      this.renderer.setPixelRatio(pixelRatioFor(this.quality,devicePixelRatio,width,height));
+      this.renderer.setSize(width,height);
+      this.monitor.reset();
+      callbacks.onResize?.();
+    };
+    this.observer = new ResizeObserver(this.resize); this.observer.observe(container); this.resize();
+    window.addEventListener('resize',this.resize);
+    this.contextLost = e => {e.preventDefault(); this.failed=true;this.ready=false; this.renderer.setAnimationLoop(null);const error=Object.assign(new Error('WebGL context lost'),{code:'CONTEXT_LOST'});this.rejectFirstFrame?.(error);callbacks.onError(error);};
+    this.renderer.domElement.addEventListener('webglcontextlost',this.contextLost);
+    this.visibility = () => { this.monitor.reset(); callbacks.onPause?.(); };
+    document.addEventListener('visibilitychange',this.visibility);
+    let last = performance.now(), publishAt = 0, previousDpr = devicePixelRatio;
+    this.renderer.setAnimationLoop(now => {
+      if(document.hidden) {last=now;return;}
+      if(previousDpr !== devicePixelRatio) {previousDpr=devicePixelRatio;this.resize();}
+      this.navigation.update(Math.min((now-last)/1000,.05),this.speed); last=now;
+      try { this.renderer.render(this.scene,this.camera); }
+      catch(error) {this.failed=true;this.ready=false;this.renderer.setAnimationLoop(null);this.rejectFirstFrame?.(error);callbacks.onError(error);return;}
+      if(this.ready&&!this.firstFrameReady&&this.spark.activeSplats>0&&this.spark.orderingTexture){
+        this.firstFrameReady=true;callbacks.onNetwork?.({phase:'rendered',at:performance.now()});this.resolveFirstFrame?.();
+      }
+      const interval = this.ready ? this.monitor.tick(now) : null;
+      if(interval !== null) for(const listener of this.frameListeners) listener(interval,now);
+      if(now-publishAt>=500) { callbacks.onStats(this.getStats(),now); publishAt=now; }
+    });
+  }
+  async load(config) {
+    this.mesh = await loadGaussian(config,this.callbacks.onProgress,this.abort.signal,this.callbacks.onNetwork);
+    if(this.disposed) {this.mesh.dispose();return;}
+    if(this.failed) throw Object.assign(new Error('Graphics context failed during load'),{code:'CONTEXT_LOST'});
+    this.mesh.updateMatrixWorld(true);
+    this.bounds=this.mesh.getBoundingBox().applyMatrix4(this.mesh.matrixWorld);
+    if(this.bounds.isEmpty() || ![...this.bounds.min,...this.bounds.max].every(Number.isFinite)) throw Object.assign(new Error('Invalid bounds'),{code:'INVALID_MODEL'});
+    this.defaultCamera=config.defaultCamera;
+    this.scene.add(this.mesh); this.resetView();this.monitor.reset();this.ready=true;
+    if(import.meta.env.DEV) console.info(`Loaded ${config.name}: ${this.mesh.numSplats} Gaussian splats`);
+  }
+  setQuality(quality) {this.quality=quality;this.resize();}
+  waitForFirstFrame() {
+    if(this.failed)return Promise.reject(Object.assign(new Error('Graphics context unavailable'),{code:'CONTEXT_LOST'}));
+    if(this.firstFrameReady)return Promise.resolve();
+    return new Promise((resolve,reject)=>{this.resolveFirstFrame=resolve;this.rejectFirstFrame=reject;});
+  }
+  getStats() {
+    const memory=performance.memory;
+    return {...this.monitor.snapshot(),quality:this.quality,
+      canvasWidth:this.renderer.domElement.width,canvasHeight:this.renderer.domElement.height,
+      viewportWidth:this.container.clientWidth,viewportHeight:this.container.clientHeight,
+      dpr:devicePixelRatio,pixelRatio:this.renderer.getPixelRatio(),splats:this.mesh?.numSplats ?? 0,
+      gpu:this.device.gpu,browser:this.device.browser,webgl:this.device.webgl,webgl2:this.device.webgl2,
+      webgpu:this.device.webgpu,renderer:'WebGL2 (active)',classification:this.device.classification,
+      heapUsed:memory?.usedJSHeapSize ?? null,heapLimit:memory?.jsHeapSizeLimit ?? null,
+      deviceMemory:this.device.deviceMemory,textures:this.renderer.info.memory.textures,
+      geometries:this.renderer.info.memory.geometries};
+  }
+  resetView() {
+    if(!this.bounds) return;
+    const sphere=this.bounds.getBoundingSphere(new THREE.Sphere());
+    const radius=Math.max(sphere.radius,.01), v=THREE.MathUtils.degToRad(this.camera.fov);
+    const h=2*Math.atan(Math.tan(v/2)*this.camera.aspect);
+    const distance=radius/Math.sin(Math.min(v,h)/2)*1.12;
+    this.camera.position.copy(sphere.center).addScaledVector(new THREE.Vector3(.7,.4,1).normalize(),distance);
+    this.camera.near=Math.max(radius/10000,.001); this.camera.far=Math.max(distance+radius*100,100);this.camera.updateProjectionMatrix();
+    this.navigation.controls.target.copy(sphere.center);
+    this.navigation.controls.minDistance=radius*.005;this.navigation.controls.maxDistance=radius*50;
+    this.navigation.controls.update();this.speed=radius*.4;
+    if(this.defaultCamera){this.camera.position.fromArray(this.defaultCamera.position);this.navigation.controls.target.fromArray(this.defaultCamera.target);this.navigation.controls.update();}
+  }
+  dispose() {
+    this.disposed=true;this.abort.abort();this.rejectFirstFrame?.(new DOMException('Aborted','AbortError'));this.frameListeners.clear(); this.renderer.setAnimationLoop(null);this.observer.disconnect();this.navigation.dispose();
+    window.removeEventListener('resize',this.resize);document.removeEventListener('visibilitychange',this.visibility);
+    this.renderer.domElement.removeEventListener('webglcontextlost',this.contextLost);
+    this.mesh?.dispose();this.spark.dispose();this.renderer.dispose();this.renderer.forceContextLoss();this.renderer.domElement.remove();
+  }
+}

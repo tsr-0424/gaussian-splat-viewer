@@ -1,0 +1,25 @@
+<!doctype html><meta charset="utf-8"><title>V0.2 error smoke tests</title>
+<link rel="stylesheet" href="/src/style.css">
+<div style="position:relative;z-index:30;background:#10151c;padding:16px">
+<button id="missing">Missing model</button><button id="invalid">Invalid model</button>
+<button id="unsupported">Unsupported WebGL2</button><button id="lost">Context lost message</button>
+<button id="software">Software gate</button><button id="actual-lost">Actual context loss</button><span id="result" role="status"></span></div><main id="viewer"></main>
+<script type="module">
+import {loadGaussian} from '/src/viewer/loader.js';
+import {ErrorOverlay} from '/src/ui/ErrorOverlay.js';
+import {detectDevice} from '/src/performance/DeviceCapabilities.js';
+import {GaussianViewer} from '/src/viewer/GaussianViewer.js';
+const overlay=new ErrorOverlay();const result=document.querySelector('#result');
+const run=async url=>{result.textContent='Testing…';try{await loadGaussian({url,rotation:[0,0,0]},()=>{},new AbortController().signal);result.textContent='Unexpected success';}catch(error){result.textContent=error.code;overlay.show(error);}};
+document.querySelector('#missing').onclick=()=>run('/tests/does-not-exist.ply');
+document.querySelector('#invalid').onclick=()=>run('/tests/invalid.ply');
+document.querySelector('#unsupported').onclick=()=>overlay.show({code:'WEBGL_UNSUPPORTED'});
+document.querySelector('#lost').onclick=()=>overlay.show({code:'CONTEXT_LOST'});
+document.querySelector('#software').onclick=()=>overlay.softwareWarning(()=>{result.textContent='LOW selected';});
+document.querySelector('#actual-lost').onclick=()=>{
+  const device=detectDevice();
+  if(!device.webgl2){result.textContent='WebGL2 unavailable';return;}
+  const viewer=new GaussianViewer(document.querySelector('#viewer'),{onStats:()=>{},onProgress:()=>{},onError:error=>{result.textContent=error.code;overlay.show(error);setTimeout(()=>viewer.dispose(),0);}},device,'LOW');
+  device.context.getExtension('WEBGL_lose_context')?.loseContext();
+};
+</script>
