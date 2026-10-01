@@ -55,3 +55,8 @@ GitHub Actions run 36901576873 已成功；首頁→Project→Viewer 實際公�
 第一次 debug 測量：Page Init 2.856s、Model Request Start 63.671s、Network 0.243s、Spark Load 0.510s、Scene CPU 0.051s、First Visible 64.341s、Viewer Open→Ready 61.485s；encoded 25,074,893 bytes、decoded 98,221,187 bytes、transfer 0（local cache）。其中 model request 前有明顯等待，不能把總時間都稱為模型下載或 parse，也不拿此結果比較手機。
 依此補上 Viewer JS 與 Debug JS 模組的 load/evaluation timing，方便未來分辨前端程式載入和 GS 載入。模組 timing 也是 wall-clock，包括下載與 evaluation，不能稱為純 CPU。
 回歸 smoke test：模型不存在顯示 MODEL_NOT_FOUND；損毀 PLY 顯示 INVALID_MODEL，均有畫面錯誤訊息。
+
+最終公開版本驗證
+Commit ba80871，GitHub Actions run 36902297337：success。新版公開 debug 實測：Page Init 0.955s、Viewer JS 5.514s、Debug JS 0.324s、Request Start 6.835s、Network 0.216s、Spark Load 0.449s、Scene CPU 0.046s、First Visible 7.443s、Viewer Open→Ready 6.488s。模型為 local cache，encoded25.07MB／decoded98.22MB／transfer0；這是暖 cache 測量，不代表首次完整網路下載。
+Ready 後完整10秒平均75.0 FPS；396,047 Gaussians，1280×720、DPR1、AUTO→HIGH。Copy Benchmark Report 成功，最新公開 debug console 無新增 error；正式版公開 Reset／Quality／Fullscreen 已實際操作。
+實際 GPU context loss 回歸也顯示 CONTEXT_LOST 與重新整理提示。尚未在本次任務實體 iPhone／Android 重跑測量，請用 debug 入口收集對照報告。
