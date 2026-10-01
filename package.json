@@ -7,7 +7,7 @@
     "build": "vite build && node scripts/verify-dist.js",
     "preview": "vite preview --host 127.0.0.1",
     "test": "node --test tests/*.test.js",
-    "deploy": "node scripts/verify-pages.js"
+    "build:pages": "npm run build && node scripts/prepare-pages-models.js && node scripts/verify-pages.js"
   },
   "keywords": [],
   "author": "",
