@@ -40,7 +40,7 @@
       "releaseUrl": "https://github.com/tsr-0424/gaussian-splat-viewer/releases/download/model-meiyuanli-v1/meiyuanli.spz",
       "format": "spz",
       "thumbnail": null,
-      "rotation": [3.141592653589793, 0, 0],
+      "rotation": [0, 0, 0],
       "defaultCamera": null,
       "metadata": {
         "sizeBytes": 7367183,
