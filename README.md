@@ -2,6 +2,7 @@
 
 [首頁](https://tsr-0424.github.io/gaussian-splat-viewer/)
 [新福里 Viewer](https://tsr-0424.github.io/gaussian-splat-viewer/#/viewer/xinfuri/main)
+[美源里 Viewer](https://tsr-0424.github.io/gaussian-splat-viewer/#/viewer/meiyuanli/main)
 [Debug Viewer](https://tsr-0424.github.io/gaussian-splat-viewer/debug/#/viewer/xinfuri/main)
 
 Three.js + Spark + Vite，純靜態、零成本 GitHub Pages / Releases。無 React、帳號、Database、Backend、R2、analytics 或 tracking。原始 PLY 與 V0.2 的品質／控制功能保留。
@@ -29,6 +30,7 @@ npm run build:debug
 - `#/`：Project Gallery。
 - `#/project/xinfuri`：新福里 Project。
 - `#/viewer/xinfuri/main`：主掃描 Viewer。
+- `#/viewer/meiyuanli/main`：美源里 SPZ 主掃描；本機副本放 `public/models/美源里.spz`。
 - 舊 `?model=xinfuri` 自動轉到 Viewer hash URL。
 
 首頁與 Project 不初始化 WebGL，不下載大型模型；進 Viewer 才 lazy import Spark 與 Three.js。換頁會停止 animation loop、取消下載、釋放 mesh/renderer、斷開 observer，避免留下多個 viewer。

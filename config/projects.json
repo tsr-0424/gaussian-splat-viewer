@@ -24,5 +24,28 @@
         "sha256": "4e447a26c34819f1558933f12f783cdf9ff574b3213056c6d38e1c894aed9b7b"
       }
     }]
+  }, {
+    "id": "meiyuanli",
+    "title": "美源里",
+    "description": "Gaussian Splat 空間紀錄。",
+    "date": null,
+    "location": null,
+    "thumbnail": null,
+    "scans": [{
+      "id": "main",
+      "title": "主掃描",
+      "assetId": "meiyuanli",
+      "developmentUrl": "models/美源里.spz",
+      "modelUrl": "projects/meiyuanli/scans/scan-001/versions/d7cc47cba908d874/model.spz",
+      "releaseUrl": "https://github.com/tsr-0424/gaussian-splat-viewer/releases/download/model-meiyuanli-v1/meiyuanli.spz",
+      "format": "spz",
+      "thumbnail": null,
+      "rotation": [3.141592653589793, 0, 0],
+      "defaultCamera": null,
+      "metadata": {
+        "sizeBytes": 7367183,
+        "sha256": "d7cc47cba908d874d75ccaed091f008daabe14e8c0fccb7a99325486f75cefeb"
+      }
+    }]
   }]
 }

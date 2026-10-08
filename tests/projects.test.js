@@ -8,8 +8,9 @@ const catalog=JSON.parse(readFileSync('config/projects.json','utf8'));
 test('static catalog adds a second project without viewer source changes and preserves Pages subpath',()=>{
  const fixture=structuredClone(catalog);const second=structuredClone(fixture.projects[0]);second.id='my-room';second.title='我的房間';delete second.scans[0].assetId;second.thumbnail='thumbnails/room.webp';fixture.projects.push(second);
  const result=generateProjects(fixture,{pages:true,siteBase:'/gaussian-splat-viewer/'});
- assert.equal(result.projects.length,2);assert.equal(result.projects[1].thumbnail,'/gaussian-splat-viewer/thumbnails/room.webp');
- assert.ok(result.projects[1].scans[0].modelUrl.endsWith('/my-room--main.ply'));assert.ok(!('developmentUrl' in result.projects[1].scans[0]));
+ const added=result.projects.at(-1);
+ assert.equal(result.projects.length,catalog.projects.length+1);assert.equal(added.thumbnail,'/gaussian-splat-viewer/thumbnails/room.webp');
+ assert.ok(added.scans[0].modelUrl.endsWith('/my-room--main.ply'));assert.ok(!('developmentUrl' in added.scans[0]));
  assert.equal(generateProjects(fixture,{development:true}).projects[0].scans[0].modelUrl,'/models/新福里.ply');
 });
 test('invalid catalog paths, duplicate identities, integrity metadata and cameras are rejected before publishing',()=>{
