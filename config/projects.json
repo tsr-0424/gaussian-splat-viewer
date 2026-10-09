@@ -47,5 +47,51 @@
         "sha256": "d7cc47cba908d874d75ccaed091f008daabe14e8c0fccb7a99325486f75cefeb"
       }
     }]
+  }, {
+    "id": "he-aiyu",
+    "title": "喝愛玉",
+    "description": "Gaussian Splat 空間紀錄。",
+    "date": null,
+    "location": null,
+    "thumbnail": null,
+    "scans": [{
+      "id": "main",
+      "title": "主掃描",
+      "assetId": "he-aiyu",
+      "developmentUrl": "models/喝愛玉.spz",
+      "modelUrl": "projects/he-aiyu/scans/scan-001/versions/fb8b27fd414519f1/model.spz",
+      "releaseUrl": "https://github.com/tsr-0424/gaussian-splat-viewer/releases/download/model-he-aiyu-v1/he-aiyu.spz",
+      "format": "spz",
+      "thumbnail": null,
+      "rotation": [0, 0, 0],
+      "defaultCamera": null,
+      "metadata": {
+        "sizeBytes": 14148871,
+        "sha256": "fb8b27fd414519f1fc90aeef9a141597c052695d2021000f3d0db321071f57b0"
+      }
+    }]
+  }, {
+    "id": "fenqihu-sign",
+    "title": "奮起湖老街路標",
+    "description": "Gaussian Splat 空間紀錄。",
+    "date": null,
+    "location": null,
+    "thumbnail": null,
+    "scans": [{
+      "id": "main",
+      "title": "主掃描",
+      "assetId": "fenqihu-sign",
+      "developmentUrl": "models/奮起湖老街路標.spz",
+      "modelUrl": "projects/fenqihu-sign/scans/scan-001/versions/34d551911032f359/model.spz",
+      "releaseUrl": "https://github.com/tsr-0424/gaussian-splat-viewer/releases/download/model-fenqihu-sign-v1/fenqihu-sign.spz",
+      "format": "spz",
+      "thumbnail": null,
+      "rotation": [0, 0, 0],
+      "defaultCamera": null,
+      "metadata": {
+        "sizeBytes": 17226649,
+        "sha256": "34d551911032f359555a59a056b55b8103cd1583945d1b20cce8ecc864696e0f"
+      }
+    }]
   }]
 }
