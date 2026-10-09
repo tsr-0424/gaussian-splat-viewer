@@ -93,5 +93,28 @@
         "sha256": "34d551911032f359555a59a056b55b8103cd1583945d1b20cce8ecc864696e0f"
       }
     }]
+  }, {
+    "id": "he-aiyu-2",
+    "title": "喝愛玉2",
+    "description": "Gaussian Splat 空間紀錄。",
+    "date": null,
+    "location": null,
+    "thumbnail": null,
+    "scans": [{
+      "id": "main",
+      "title": "主掃描",
+      "assetId": "he-aiyu-2",
+      "developmentUrl": "models/喝愛玉2.spz",
+      "modelUrl": "projects/he-aiyu-2/scans/scan-001/versions/807fa979aa4f6eaf/model.spz",
+      "releaseUrl": "https://github.com/tsr-0424/gaussian-splat-viewer/releases/download/model-he-aiyu-2-v1/he-aiyu-2.spz",
+      "format": "spz",
+      "thumbnail": null,
+      "rotation": [0, 0, 0],
+      "defaultCamera": null,
+      "metadata": {
+        "sizeBytes": 13848899,
+        "sha256": "807fa979aa4f6eaf1709acaf62b919094f9e08be5f04b54660ee23dec89ccf7b"
+      }
+    }]
   }]
 }
