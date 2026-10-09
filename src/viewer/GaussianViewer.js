@@ -5,6 +5,7 @@ import { loadGaussian } from './loader.js';
 import { pixelRatioFor } from '../performance/QualityPresets.js';
 import { PerformanceMonitor } from '../performance/PerformanceMonitor.js';
 import {FirstSplatVisibility} from './FirstSplatVisibility.js';
+import {validCameraView} from './cameraView.js';
 export class GaussianViewer {
   constructor(container, callbacks, device, quality) {
     this.callbacks = callbacks;
@@ -105,7 +106,23 @@ export class GaussianViewer {
     this.navigation.controls.target.copy(sphere.center);
     this.navigation.controls.minDistance=radius*.005;this.navigation.controls.maxDistance=radius*50;
     this.navigation.controls.update();this.speed=radius*.4;
-    if(this.defaultCamera){this.camera.position.fromArray(this.defaultCamera.position);this.navigation.controls.target.fromArray(this.defaultCamera.target);this.navigation.controls.update();}
+    if(this.defaultCamera)this.setCameraView(this.defaultCamera);
+  }
+  getCameraView() {
+    if(!this.ready)return null;
+    return {position:this.camera.position.toArray(),target:this.navigation.controls.target.toArray()};
+  }
+  setCameraView(view) {
+    if(!validCameraView(view))return;
+    const controls=this.navigation.controls;
+    const distance=Math.hypot(...view.position.map((value,index)=>value-view.target[index]));
+    // Allow viewpoints inside the scan, even when the overview has a large radius.
+    controls.minDistance=Math.min(controls.minDistance,distance*.01);
+    controls.maxDistance=Math.max(controls.maxDistance,distance*2);
+    this.camera.near=Math.min(this.camera.near,distance*.01);this.camera.updateProjectionMatrix();
+    const damping=controls.enableDamping;controls.enableDamping=false;controls.update();
+    this.camera.position.fromArray(view.position);controls.target.fromArray(view.target);
+    controls.update();controls.enableDamping=damping;
   }
   dispose() {
     this.disposed=true;this.abort.abort();this.rejectFirstFrame?.(new DOMException('Aborted','AbortError'));this.frameListeners.clear(); this.renderer.setAnimationLoop(null);this.observer.disconnect();this.navigation.dispose();

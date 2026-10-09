@@ -7,12 +7,13 @@ import {ErrorOverlay} from '../ui/ErrorOverlay.js';
 import {asViewerError} from './errors.js';
 import {WebActions} from '../ui/WebActions.js';
 import {ViewerUI} from '../ui/ViewerUI.js';
+import {cameraViewFromUrl} from './cameraView.js';
 const DEBUG=import.meta.env.DEV||import.meta.env.VITE_DEBUG_BUILD==='true';
 
 export function createViewerSession(container,project,scan,{pageInitializedAt,openedAt,moduleReadyAt,request}){
  const ui=new ViewerUI(container,project,scan),reset=document.querySelector('#reset'),qualitySelect=document.querySelector('#quality');
- const modelConfig={...scan,request,name:`${project.title} / ${scan.title}`,projectTitle:project.title,url:new URL(scan.modelUrl,location.href).href,rotation:scan.rotation??[0,0,0]};
- const loading=new LoadingScreen(project.title),errors=new ErrorOverlay(),webActions=new WebActions({normalBase:import.meta.env.VITE_DEBUG_BUILD==='true'?import.meta.env.VITE_MODEL_BASE_PATH:undefined});
+ const modelConfig={...scan,request,defaultCamera:cameraViewFromUrl(location.href)??scan.defaultCamera,name:`${project.title} / ${scan.title}`,projectTitle:project.title,url:new URL(scan.modelUrl,location.href).href,rotation:scan.rotation??[0,0,0]};
+ const loading=new LoadingScreen(project.title),errors=new ErrorOverlay(),webActions=new WebActions({normalBase:import.meta.env.VITE_DEBUG_BUILD==='true'?import.meta.env.VITE_MODEL_BASE_PATH:undefined,getCameraView:()=>viewer?.getCameraView()});
  let viewer,adaptive,panel,benchmark,profiler,profilerPanel,network,networkPanel,BenchmarkType,disposed=false;
  const device=detectDevice();
  document.title=`${project.title} / ${scan.title} · Spatial Scan`;
@@ -71,7 +72,8 @@ export function createViewerSession(container,project,scan,{pageInitializedAt,op
  const modeButton=document.querySelector('#navigation-mode');let explore=false;
  modeButton.onclick=()=>{explore=!explore;modeButton.textContent=explore?'Explore':'Orbit';modeButton.setAttribute('aria-pressed',String(explore));if(viewer)viewer.navigation.controls.screenSpacePanning=!explore;};
  reset.onclick=onReset;qualitySelect.onchange=onQuality;document.querySelector('#performance-toggle').onclick=onToggle;window.addEventListener('keydown',onKey);
- const copy=document.createElement('button');copy.textContent='Copy Link';copy.onclick=()=>webActions.copy();ui.settings.append(copy);
+ const copy=document.createElement('button');copy.textContent='複製目前視角';copy.onclick=()=>webActions.copy();ui.settings.append(copy);
+ const origin=document.createElement('button');origin.textContent='從掃描原點觀看';origin.onclick=()=>{if(!viewer?.ready||benchmark?.running)return;viewer.setCameraView({position:[0,0,0],target:[0,0,-1]});document.querySelector('#web-status').textContent='掃描原點不一定是拍攝位置；調整後可複製目前視角。';};ui.settings.append(origin);
  if(!device.webgl2)onError(Object.assign(new Error('WebGL2 unavailable'),{code:'WEBGL_UNSUPPORTED'}));
  else if(device.software){loading.hide();errors.softwareWarning(()=>{loading.element.hidden=false;start(true);});}
  else start();

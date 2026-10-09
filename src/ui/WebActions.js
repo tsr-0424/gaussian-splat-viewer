@@ -1,11 +1,11 @@
 import {shareData} from './share.js';
 export class WebActions {
-  constructor({normalBase}={}) {
+  constructor({normalBase,getCameraView}={}) {
     this.share=document.querySelector('#share');this.fullscreen=document.querySelector('#fullscreen');this.status=document.querySelector('#web-status');
     this.copyField=document.querySelector('#copy-link');
-    const data=()=>shareData(document.title,location.href,normalBase);
+    const data=()=>shareData(document.title,location.href,normalBase,getCameraView?.());
     this.copy=async()=>{
-      try{await navigator.clipboard.writeText(data().url);this.status.textContent='連結已複製';}
+      try{await navigator.clipboard.writeText(data().url);this.status.textContent=getCameraView?.()?'含目前視角的連結已複製；貼回對話即可設定公開預設。':'連結已複製';}
       catch{this.copyField.value=data().url;this.copyField.hidden=false;this.copyField.focus();this.copyField.select();this.status.textContent='請複製下方網址';}
     };
     this.onShare=async()=>{
