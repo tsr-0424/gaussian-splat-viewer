@@ -56,9 +56,9 @@ npm run build:debug
 
 選定公開起點：進入 Viewer 後，用滑鼠／觸控或 WASD/QE 調到希望的觀看位置，Settings →「複製目前視角」。把連結貼回維護者即可將 position/target 寫入對應 scan 的 defaultCamera，再發布為所有訪客的預設。連結本身也會重現視角，優先於公開 defaultCamera；Reset View 返回該連結起點。Settings 的「從掃描原點觀看」提供選點起點，但不保證原點等於拍攝位置。這些 SPZ v3 檔案只含 Gaussian 資料，沒有拍攝相機路徑；原始模型保持不變。
 
-Viewer 全視窗；左上專案／掃描名稱，右上 Fullscreen、Share、Settings，底部 Orbit/Explore、Reset、Quality。Explore 目前切換為 ground-plane panning，並保留 WASD/QE；不是新作的第一人稱碰撞系統。
+Viewer 全視窗；左上專案／掃描名稱，右上 Fullscreen、Share、Settings，底部「環視／繞物件」、Reset、Quality。預設環視：在目前位置轉頭，不绕模型中心移動；維持世界向上、不側翻。點「環視」可切換繞物件模式，適合查看便當等物件。
 
-左鍵旋轉、右鍵或 Shift+左鍵平移、滾輪縮放；WASD/QE 移動，Shift 加速，R 重設。Touch 使用 OrbitControls：單指旋轉、雙指縮放／平移。AUTO/HIGH/MEDIUM/LOW、software renderer 警示、自動取景及 cooldown/hysteresis 保留。preset 只改 framebuffer resolution。
+環視：左鍵／單指轉頭、右鍵或 Shift+左鍵平移、滾輪向前後移動；雙指縮放前後移動／雙指平移。繞物件使用 OrbitControls：左鍵旋轉、滾輪朝游標縮放、雙指縮放／平移。兩種模式皆支援 WASD/QE、Shift 加速、R 重設。移除依模型半徑設定的縮放上下限；環視可穿過原本的中心點繼續前進。遠端裁切距離會隨相機位置延伸。AUTO/HIGH/MEDIUM/LOW、software renderer 警示、自動取景及 cooldown/hysteresis 保留。preset 只改 framebuffer resolution。
 
 Share 使用系統分享；不支援時 Copy Link，Settings 也有明確 Copy Link。Debug 版分享會產生正常版的目前 Project/Scan URL。Fullscreen 在瀏覽器支援時顯示。
 

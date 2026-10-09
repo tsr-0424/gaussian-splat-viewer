@@ -69,8 +69,8 @@ export function createViewerSession(container,project,scan,{pageInitializedAt,op
  const onQuality=()=>adaptive?.setMode(qualitySelect.value,performance.now());
  const onToggle=()=>{panel?.toggle();if(viewer&&panel){panel.update(viewer.getStats(),adaptive.mode);profiler?.refreshResource();profilerPanel.update(profiler.snapshot());networkPanel.update(network.snapshot());}};
  const onKey=event=>{if(['INPUT','TEXTAREA','SELECT'].includes(event.target.tagName))return;if(event.code==='KeyR'&&!event.repeat&&!reset.disabled)onReset();if(DEBUG&&event.code==='KeyP'&&!event.repeat)onToggle();};
- const modeButton=document.querySelector('#navigation-mode');let explore=false;
- modeButton.onclick=()=>{explore=!explore;modeButton.textContent=explore?'Explore':'Orbit';modeButton.setAttribute('aria-pressed',String(explore));if(viewer)viewer.navigation.controls.screenSpacePanning=!explore;};
+ const modeButton=document.querySelector('#navigation-mode');modeButton.textContent='環視';let orbitMode=false;
+ modeButton.onclick=()=>{if(!viewer?.ready||benchmark?.running)return;orbitMode=!orbitMode;modeButton.textContent=orbitMode?'繞物件':'環視';modeButton.setAttribute('aria-pressed',String(orbitMode));viewer.setNavigationMode(orbitMode?'ORBIT':'LOOK');};
  reset.onclick=onReset;qualitySelect.onchange=onQuality;document.querySelector('#performance-toggle').onclick=onToggle;window.addEventListener('keydown',onKey);
  const copy=document.createElement('button');copy.textContent='複製目前視角';copy.onclick=()=>webActions.copy();ui.settings.append(copy);
  const origin=document.createElement('button');origin.textContent='從掃描原點觀看';origin.onclick=()=>{if(!viewer?.ready||benchmark?.running)return;viewer.setCameraView({position:[0,0,0],target:[0,0,-1]});document.querySelector('#web-status').textContent='掃描原點不一定是拍攝位置；調整後可複製目前視角。';};ui.settings.append(origin);

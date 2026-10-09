@@ -45,6 +45,7 @@ export class GaussianViewer {
       if(document.hidden) {last=now;return;}
       if(previousDpr !== devicePixelRatio) {previousDpr=devicePixelRatio;this.resize();}
       this.navigation.update(Math.min((now-last)/1000,.05),this.speed); last=now;
+      if(this.bounds){const sphere=this.viewSphere;const needed=this.camera.position.distanceTo(sphere.center)+sphere.radius*2;if(needed>this.camera.far*.8){this.camera.far=Math.max(this.camera.far,needed*2);this.camera.updateProjectionMatrix();}}
       try { this.renderer.render(this.scene,this.camera); }
       catch(error) {this.failed=true;this.ready=false;this.renderer.setAnimationLoop(null);this.rejectFirstFrame?.(error);callbacks.onError(error);return;}
       if(!this.firstRenderReported){this.firstRenderReported=true;callbacks.onNetwork?.({phase:'first-render',at:performance.now()});}
@@ -72,12 +73,17 @@ export class GaussianViewer {
     this.mesh.updateMatrixWorld(true);
     this.bounds=this.mesh.getBoundingBox().applyMatrix4(this.mesh.matrixWorld);
     if(this.bounds.isEmpty() || ![...this.bounds.min,...this.bounds.max].every(Number.isFinite)) throw Object.assign(new Error('Invalid bounds'),{code:'INVALID_MODEL'});
+    this.viewSphere=this.bounds.getBoundingSphere(new THREE.Sphere());
     this.defaultCamera=config.defaultCamera;
     this.scene.add(this.mesh); this.resetView();this.monitor.reset();this.ready=true;
     this.callbacks.onNetwork?.({phase:'scene-init-end',at:performance.now()});
     if(import.meta.env.DEV) console.info(`Loaded ${config.name}: ${this.mesh.numSplats} Gaussian splats`);
   }
   setQuality(quality) {this.quality=quality;this.resize();}
+  setNavigationMode(mode) {
+    this.navigation.setMode(mode);
+    if(mode==='ORBIT'&&this.viewSphere&&this.camera.position.distanceToSquared(this.viewSphere.center)>1e-12){this.navigation.controls.target.copy(this.viewSphere.center);this.navigation.controls.update();}
+  }
   waitForFirstFrame() {
     if(this.failed)return Promise.reject(Object.assign(new Error('Graphics context unavailable'),{code:'CONTEXT_LOST'}));
     if(this.firstFrameReady)return Promise.resolve();
@@ -102,9 +108,9 @@ export class GaussianViewer {
     const h=2*Math.atan(Math.tan(v/2)*this.camera.aspect);
     const distance=radius/Math.sin(Math.min(v,h)/2)*1.12;
     this.camera.position.copy(sphere.center).addScaledVector(new THREE.Vector3(.7,.4,1).normalize(),distance);
-    this.camera.near=Math.max(radius/10000,.001); this.camera.far=Math.max(distance+radius*100,100);this.camera.updateProjectionMatrix();
+    this.camera.near=Math.min(Math.max(radius/10000,1e-6),.001); this.camera.far=Math.max(distance+radius*100,100);this.camera.updateProjectionMatrix();
     this.navigation.controls.target.copy(sphere.center);
-    this.navigation.controls.minDistance=radius*.005;this.navigation.controls.maxDistance=radius*50;
+    this.navigation.controls.minDistance=0;this.navigation.controls.maxDistance=Infinity;
     this.navigation.controls.update();this.speed=radius*.4;
     if(this.defaultCamera)this.setCameraView(this.defaultCamera);
   }
