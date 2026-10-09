@@ -116,5 +116,28 @@
         "sha256": "807fa979aa4f6eaf1709acaf62b919094f9e08be5f04b54660ee23dec89ccf7b"
       }
     }]
+  }, {
+    "id": "bento",
+    "title": "便當",
+    "description": "Gaussian Splat 空間紀錄。",
+    "date": null,
+    "location": null,
+    "thumbnail": null,
+    "scans": [{
+      "id": "main",
+      "title": "主掃描",
+      "assetId": "bento",
+      "developmentUrl": "models/便當.spz",
+      "modelUrl": "projects/bento/scans/scan-001/versions/a79d73176fd8da22/model.spz",
+      "releaseUrl": "https://github.com/tsr-0424/gaussian-splat-viewer/releases/download/model-bento-v1/bento.spz",
+      "format": "spz",
+      "thumbnail": null,
+      "rotation": [0, 0, 0],
+      "defaultCamera": null,
+      "metadata": {
+        "sizeBytes": 9415789,
+        "sha256": "a79d73176fd8da22f3335a2ed013ca8dafcc1d588c9baab3acd80be9c5a67cec"
+      }
+    }]
   }]
 }
