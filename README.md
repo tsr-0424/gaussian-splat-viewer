@@ -6,6 +6,7 @@
 [喝愛玉 Viewer](https://tsr-0424.github.io/gaussian-splat-viewer/#/viewer/he-aiyu/main)
 [喝愛玉2 Viewer](https://tsr-0424.github.io/gaussian-splat-viewer/#/viewer/he-aiyu-2/main)
 [便當 Viewer](https://tsr-0424.github.io/gaussian-splat-viewer/#/viewer/bento/main)
+[鹿頂巨木 Viewer](https://tsr-0424.github.io/gaussian-splat-viewer/#/viewer/luding-giant-tree/main)
 [奮起湖老街路標 Viewer](https://tsr-0424.github.io/gaussian-splat-viewer/#/viewer/fenqihu-sign/main)
 [Debug Viewer](https://tsr-0424.github.io/gaussian-splat-viewer/debug/#/viewer/xinfuri/main)
 

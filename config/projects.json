@@ -139,5 +139,28 @@
         "sha256": "a79d73176fd8da22f3335a2ed013ca8dafcc1d588c9baab3acd80be9c5a67cec"
       }
     }]
+  }, {
+    "id": "luding-giant-tree",
+    "title": "鹿頂巨木",
+    "description": "Gaussian Splat 空間紀錄。",
+    "date": null,
+    "location": null,
+    "thumbnail": null,
+    "scans": [{
+      "id": "main",
+      "title": "主掃描",
+      "assetId": "luding-giant-tree",
+      "developmentUrl": "models/鹿頂巨木.spz",
+      "modelUrl": "projects/luding-giant-tree/scans/scan-001/versions/d980b1deb2be0d70/model.spz",
+      "releaseUrl": "https://github.com/tsr-0424/gaussian-splat-viewer/releases/download/model-luding-giant-tree-v1/luding-giant-tree.spz",
+      "format": "spz",
+      "thumbnail": null,
+      "rotation": [0, 0, 0],
+      "defaultCamera": null,
+      "metadata": {
+        "sizeBytes": 16024575,
+        "sha256": "d980b1deb2be0d706b205ab39408fd241bd6fad16a9d378a3c2751ff1aea7da8"
+      }
+    }]
   }]
 }
